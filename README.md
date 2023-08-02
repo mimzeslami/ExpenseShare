@@ -30,7 +30,7 @@ ExpenseShare is a comprehensive travel expense sharing app that helps users effo
 ## Technologies Used
 
 - Frontend: Flutter (Dart)
-- Backend: Golang
+- Backend: Go (Golang)
 - Database: PostgreSQL
 - Weather Data: Weather API Integration
 - Authentication: PASETO authentication
@@ -55,9 +55,7 @@ To get started with ExpenseShare, follow these steps:
 
 2. **Backend:**
    - Navigate to the `backend` directory.
-   - Create and activate a virtual environment: `python3 -m venv venv` and `source venv/bin/activate`.
-   - Install required packages: `pip install -r requirements.txt`.
-   - Set up PostgreSQL database and update the database settings in `settings.py`.
+   - Build and run the backend server using `make server`.
 
 ## Usage
 
