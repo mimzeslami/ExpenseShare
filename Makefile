@@ -3,7 +3,7 @@ createdb:
 dropdb:
 	docker exec -it postgres12 dropdb expense_share
 migrateup:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/expense_share?sslmode=disable" -verbose up
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/expense_share?sslmode=disable" -verbose up 
 migratedown:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/expense_share?sslmode=disable" -verbose down
 sqlc:

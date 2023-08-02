@@ -27,3 +27,11 @@ func RandomString(n int) string {
 func RandomUser() string {
 	return RandomString(6)
 }
+
+func RandomEmail() string {
+	return RandomString(6) + "@gmail.com"
+}
+
+func RandomDatetime() time.Time {
+	return time.Now().Add(time.Duration(RandomInt(0, 1000)) * time.Hour).Local()
+}
