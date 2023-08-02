@@ -49,13 +49,9 @@ To get started with ExpenseShare, follow these steps:
 
 ## Installation
 
-1. **Frontend:**
-   - Navigate to the `frontend` directory.
-   - Install Flutter and required packages using `flutter pub get`.
 
-2. **Backend:**
-   - Navigate to the `backend` directory.
-   - Build and run the backend server using `make server`.
+
+ - Build and run the backend server using `make server`.
 
 ## Usage
 
