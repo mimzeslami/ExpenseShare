@@ -2,19 +2,18 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/mimzeslami/expense_share/db/sqlc"
+	"github.com/mimzeslami/expense_share/token"
 )
 
 type createTripRequest struct {
 	Title     string `json:"title" binding:"required"`
 	StartDate string `json:"start_date" binding:"required"`
 	EndDate   string `json:"end_date" binding:"required"`
-	UserID    int64  `json:"user_id" binding:"required"`
 }
 
 func (server *Server) createTrip(ctx *gin.Context) {
@@ -30,18 +29,19 @@ func (server *Server) createTrip(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("startDate :::::::", startDate)
 	endDate, err := time.Parse("2006-01-02", req.EndDate)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
 	arg := db.CreateTripParams{
 		Title:     req.Title,
 		StartDate: startDate,
 		EndDate:   endDate,
-		UserID:    req.UserID,
+		UserID:    authPayload.UserId,
 	}
 	trip, err := server.store.CreateTrip(ctx, arg)
 	if err != nil {

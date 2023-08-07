@@ -2,14 +2,15 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/mimzeslami/expense_share/util"
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomTrip(t *testing.T) Trips {
-	user := createRandomUser(t)
+func createRandomTrip(t *testing.T, user Users) Trips {
+
 	arg := CreateTripParams{
 		Title:     util.RandomString(6),
 		StartDate: util.RandomDatetime(),
@@ -27,5 +28,67 @@ func createRandomTrip(t *testing.T) Trips {
 }
 
 func TestCreateTrip(t *testing.T) {
-	createRandomTrip(t)
+	user := createRandomUser(t)
+	createRandomTrip(t, user)
+}
+
+func TestGetTrip(t *testing.T) {
+	user := createRandomUser(t)
+	trip1 := createRandomTrip(t, user)
+	trip2, err := testQueries.GetTrip(context.Background(), trip1.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, trip2)
+	require.Equal(t, trip1.Title, trip2.Title)
+	require.Equal(t, trip1.UserID, trip2.UserID)
+	require.Equal(t, trip1.ID, trip2.ID)
+}
+
+func TestListTrip(t *testing.T) {
+	user := createRandomUser(t)
+	for i := 0; i < 10; i++ {
+		createRandomTrip(t, user)
+	}
+	arg := ListTripParams{
+		UserID: user.ID,
+		Limit:  5,
+		Offset: 5,
+	}
+	trips, err := testQueries.ListTrip(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, trips, 5)
+	for _, trip := range trips {
+		require.NotEmpty(t, trip)
+	}
+}
+
+func TestUpdateTrip(t *testing.T) {
+	user := createRandomUser(t)
+	trip1 := createRandomTrip(t, user)
+	arg := UpdateTripParams{
+		ID:        trip1.ID,
+		Title:     util.RandomString(6),
+		StartDate: util.RandomDatetime(),
+		EndDate:   util.RandomDatetime(),
+	}
+	trip2, err := testQueries.UpdateTrip(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, trip2)
+	require.Equal(t, trip1.ID, trip2.ID)
+	require.Equal(t, arg.Title, trip2.Title)
+	require.Equal(t, arg.StartDate, trip2.StartDate)
+	require.Equal(t, arg.EndDate, trip2.EndDate)
+}
+
+func TestDeleteTrip(t *testing.T) {
+	user := createRandomUser(t)
+	trip := createRandomTrip(t, user)
+
+	err := testQueries.DeleteTrip(context.Background(), trip.ID)
+	require.NoError(t, err)
+
+	trip1, err := testQueries.GetTrip(context.Background(), trip.ID)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, trip1)
+
 }

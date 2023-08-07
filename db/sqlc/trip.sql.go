@@ -47,6 +47,16 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, 
 	return i, err
 }
 
+const deleteTrip = `-- name: DeleteTrip :exec
+DELETE FROM trips
+WHERE id = $1
+`
+
+func (q *Queries) DeleteTrip(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTrip, id)
+	return err
+}
+
 const getTrip = `-- name: GetTrip :one
 SELECT id, title, user_id, start_date, end_date, created_at FROM trips
 WHERE id = $1 LIMIT 1
@@ -54,6 +64,82 @@ WHERE id = $1 LIMIT 1
 
 func (q *Queries) GetTrip(ctx context.Context, id int64) (Trips, error) {
 	row := q.db.QueryRowContext(ctx, getTrip, id)
+	var i Trips
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.UserID,
+		&i.StartDate,
+		&i.EndDate,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listTrip = `-- name: ListTrip :many
+SELECT id, title, user_id, start_date, end_date, created_at FROM trips
+WHERE user_id = $1
+LIMIT $2 OFFSET $3
+`
+
+type ListTripParams struct {
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListTrip(ctx context.Context, arg ListTripParams) ([]Trips, error) {
+	rows, err := q.db.QueryContext(ctx, listTrip, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Trips{}
+	for rows.Next() {
+		var i Trips
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.UserID,
+			&i.StartDate,
+			&i.EndDate,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateTrip = `-- name: UpdateTrip :one
+UPDATE trips SET
+  title = $2,
+  start_date = $3,
+  end_date = $4
+WHERE id = $1 RETURNING id, title, user_id, start_date, end_date, created_at
+`
+
+type UpdateTripParams struct {
+	ID        int64     `json:"id"`
+	Title     string    `json:"title"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+}
+
+func (q *Queries) UpdateTrip(ctx context.Context, arg UpdateTripParams) (Trips, error) {
+	row := q.db.QueryRowContext(ctx, updateTrip,
+		arg.ID,
+		arg.Title,
+		arg.StartDate,
+		arg.EndDate,
+	)
 	var i Trips
 	err := row.Scan(
 		&i.ID,

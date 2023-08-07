@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/google/uuid"
 	db "github.com/mimzeslami/expense_share/db/sqlc"
 )
 
@@ -50,6 +51,21 @@ func (mr *MockStoreMockRecorder) CreateFellowTravelers(arg0, arg1 interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFellowTravelers", reflect.TypeOf((*MockStore)(nil).CreateFellowTravelers), arg0, arg1)
 }
 
+// CreateSession mocks base method.
+func (m *MockStore) CreateSession(arg0 context.Context, arg1 db.CreateSessionParams) (db.Sessions, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSession", arg0, arg1)
+	ret0, _ := ret[0].(db.Sessions)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSession indicates an expected call of CreateSession.
+func (mr *MockStoreMockRecorder) CreateSession(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSession", reflect.TypeOf((*MockStore)(nil).CreateSession), arg0, arg1)
+}
+
 // CreateTrip mocks base method.
 func (m *MockStore) CreateTrip(arg0 context.Context, arg1 db.CreateTripParams) (db.Trips, error) {
 	m.ctrl.T.Helper()
@@ -80,6 +96,62 @@ func (mr *MockStoreMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockStore)(nil).CreateUser), arg0, arg1)
 }
 
+// DeleteFellowTraveler mocks base method.
+func (m *MockStore) DeleteFellowTraveler(arg0 context.Context, arg1 int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteFellowTraveler", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteFellowTraveler indicates an expected call of DeleteFellowTraveler.
+func (mr *MockStoreMockRecorder) DeleteFellowTraveler(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFellowTraveler", reflect.TypeOf((*MockStore)(nil).DeleteFellowTraveler), arg0, arg1)
+}
+
+// DeleteTrip mocks base method.
+func (m *MockStore) DeleteTrip(arg0 context.Context, arg1 int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTrip", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTrip indicates an expected call of DeleteTrip.
+func (mr *MockStoreMockRecorder) DeleteTrip(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTrip", reflect.TypeOf((*MockStore)(nil).DeleteTrip), arg0, arg1)
+}
+
+// DeleteTripFellowTravelers mocks base method.
+func (m *MockStore) DeleteTripFellowTravelers(arg0 context.Context, arg1 int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTripFellowTravelers", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTripFellowTravelers indicates an expected call of DeleteTripFellowTravelers.
+func (mr *MockStoreMockRecorder) DeleteTripFellowTravelers(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTripFellowTravelers", reflect.TypeOf((*MockStore)(nil).DeleteTripFellowTravelers), arg0, arg1)
+}
+
+// DeleteUser mocks base method.
+func (m *MockStore) DeleteUser(arg0 context.Context, arg1 int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUser", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUser indicates an expected call of DeleteUser.
+func (mr *MockStoreMockRecorder) DeleteUser(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockStore)(nil).DeleteUser), arg0, arg1)
+}
+
 // GetFellowTraveler mocks base method.
 func (m *MockStore) GetFellowTraveler(arg0 context.Context, arg1 int64) (db.FellowTravelers, error) {
 	m.ctrl.T.Helper()
@@ -93,6 +165,21 @@ func (m *MockStore) GetFellowTraveler(arg0 context.Context, arg1 int64) (db.Fell
 func (mr *MockStoreMockRecorder) GetFellowTraveler(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFellowTraveler", reflect.TypeOf((*MockStore)(nil).GetFellowTraveler), arg0, arg1)
+}
+
+// GetSession mocks base method.
+func (m *MockStore) GetSession(arg0 context.Context, arg1 uuid.UUID) (db.Sessions, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSession", arg0, arg1)
+	ret0, _ := ret[0].(db.Sessions)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSession indicates an expected call of GetSession.
+func (mr *MockStoreMockRecorder) GetSession(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockStore)(nil).GetSession), arg0, arg1)
 }
 
 // GetTrip mocks base method.
@@ -138,4 +225,79 @@ func (m *MockStore) GetUser(arg0 context.Context, arg1 string) (db.Users, error)
 func (mr *MockStoreMockRecorder) GetUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockStore)(nil).GetUser), arg0, arg1)
+}
+
+// ListTrip mocks base method.
+func (m *MockStore) ListTrip(arg0 context.Context, arg1 db.ListTripParams) ([]db.Trips, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListTrip", arg0, arg1)
+	ret0, _ := ret[0].([]db.Trips)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListTrip indicates an expected call of ListTrip.
+func (mr *MockStoreMockRecorder) ListTrip(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrip", reflect.TypeOf((*MockStore)(nil).ListTrip), arg0, arg1)
+}
+
+// ListUser mocks base method.
+func (m *MockStore) ListUser(arg0 context.Context, arg1 db.ListUserParams) ([]db.Users, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListUser", arg0, arg1)
+	ret0, _ := ret[0].([]db.Users)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListUser indicates an expected call of ListUser.
+func (mr *MockStoreMockRecorder) ListUser(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUser", reflect.TypeOf((*MockStore)(nil).ListUser), arg0, arg1)
+}
+
+// UpdateFellowTraveler mocks base method.
+func (m *MockStore) UpdateFellowTraveler(arg0 context.Context, arg1 db.UpdateFellowTravelerParams) (db.FellowTravelers, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateFellowTraveler", arg0, arg1)
+	ret0, _ := ret[0].(db.FellowTravelers)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateFellowTraveler indicates an expected call of UpdateFellowTraveler.
+func (mr *MockStoreMockRecorder) UpdateFellowTraveler(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateFellowTraveler", reflect.TypeOf((*MockStore)(nil).UpdateFellowTraveler), arg0, arg1)
+}
+
+// UpdateTrip mocks base method.
+func (m *MockStore) UpdateTrip(arg0 context.Context, arg1 db.UpdateTripParams) (db.Trips, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTrip", arg0, arg1)
+	ret0, _ := ret[0].(db.Trips)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateTrip indicates an expected call of UpdateTrip.
+func (mr *MockStoreMockRecorder) UpdateTrip(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTrip", reflect.TypeOf((*MockStore)(nil).UpdateTrip), arg0, arg1)
+}
+
+// UpdateUser mocks base method.
+func (m *MockStore) UpdateUser(arg0 context.Context, arg1 db.UpdateUserParams) (db.Users, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUser", arg0, arg1)
+	ret0, _ := ret[0].(db.Users)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUser indicates an expected call of UpdateUser.
+func (mr *MockStoreMockRecorder) UpdateUser(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockStore)(nil).UpdateUser), arg0, arg1)
 }

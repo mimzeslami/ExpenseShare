@@ -38,6 +38,26 @@ func (q *Queries) CreateFellowTravelers(ctx context.Context, arg CreateFellowTra
 	return i, err
 }
 
+const deleteFellowTraveler = `-- name: DeleteFellowTraveler :exec
+DELETE FROM fellow_travelers
+WHERE id = $1
+`
+
+func (q *Queries) DeleteFellowTraveler(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFellowTraveler, id)
+	return err
+}
+
+const deleteTripFellowTravelers = `-- name: DeleteTripFellowTravelers :exec
+DELETE FROM fellow_travelers
+WHERE trip_id = $1
+`
+
+func (q *Queries) DeleteTripFellowTravelers(ctx context.Context, tripID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTripFellowTravelers, tripID)
+	return err
+}
+
 const getFellowTraveler = `-- name: GetFellowTraveler :one
 SELECT id, trip_id, fellow_first_name, fellow_last_name, created_at FROM fellow_travelers
 WHERE id = $1 LIMIT 1
@@ -88,4 +108,30 @@ func (q *Queries) GetTripFellowTravelers(ctx context.Context, tripID int64) ([]F
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateFellowTraveler = `-- name: UpdateFellowTraveler :one
+UPDATE fellow_travelers SET
+  fellow_first_name = $2,
+  fellow_last_name = $3
+WHERE id = $1 RETURNING id, trip_id, fellow_first_name, fellow_last_name, created_at
+`
+
+type UpdateFellowTravelerParams struct {
+	ID              int64  `json:"id"`
+	FellowFirstName string `json:"fellow_first_name"`
+	FellowLastName  string `json:"fellow_last_name"`
+}
+
+func (q *Queries) UpdateFellowTraveler(ctx context.Context, arg UpdateFellowTravelerParams) (FellowTravelers, error) {
+	row := q.db.QueryRowContext(ctx, updateFellowTraveler, arg.ID, arg.FellowFirstName, arg.FellowLastName)
+	var i FellowTravelers
+	err := row.Scan(
+		&i.ID,
+		&i.TripID,
+		&i.FellowFirstName,
+		&i.FellowLastName,
+		&i.CreatedAt,
+	)
+	return i, err
 }

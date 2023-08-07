@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	_ "github.com/lib/pq"
@@ -49,4 +50,49 @@ func TestGetUser(t *testing.T) {
 	require.Equal(t, user1.LastName, user2.LastName)
 	require.Equal(t, user1.Email, user2.Email)
 	require.Equal(t, user1.PasswordHash, user2.PasswordHash)
+}
+
+func TestListUser(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		createRandomUser(t)
+	}
+	arg := ListUserParams{
+		Limit:  5,
+		Offset: 5,
+	}
+	users, err := testQueries.ListUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, users, 5)
+	for _, user := range users {
+		require.NotEmpty(t, user)
+	}
+}
+
+func TestUpdateUser(t *testing.T) {
+	user1 := createRandomUser(t)
+	arg := UpdateUserParams{
+		ID:           user1.ID,
+		FirstName:    util.RandomString(6),
+		LastName:     util.RandomString(6),
+		Email:        util.RandomEmail(),
+		PasswordHash: user1.PasswordHash,
+	}
+	user2, err := testQueries.UpdateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user2)
+	require.Equal(t, user1.ID, user2.ID)
+	require.Equal(t, arg.FirstName, user2.FirstName)
+	require.Equal(t, arg.LastName, user2.LastName)
+	require.Equal(t, arg.Email, user2.Email)
+	require.Equal(t, user1.PasswordHash, user2.PasswordHash)
+}
+
+func TestDeleteUser(t *testing.T) {
+	user1 := createRandomUser(t)
+	err := testQueries.DeleteUser(context.Background(), user1.ID)
+	require.NoError(t, err)
+	user2, err := testQueries.GetUser(context.Background(), user1.Email)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, user2)
 }

@@ -6,16 +6,29 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
 	CreateFellowTravelers(ctx context.Context, arg CreateFellowTravelersParams) (FellowTravelers, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Sessions, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
+	DeleteFellowTraveler(ctx context.Context, id int64) error
+	DeleteTrip(ctx context.Context, id int64) error
+	DeleteTripFellowTravelers(ctx context.Context, tripID int64) error
+	DeleteUser(ctx context.Context, id int64) error
 	GetFellowTraveler(ctx context.Context, id int64) (FellowTravelers, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Sessions, error)
 	GetTrip(ctx context.Context, id int64) (Trips, error)
 	GetTripFellowTravelers(ctx context.Context, tripID int64) ([]FellowTravelers, error)
 	GetUser(ctx context.Context, email string) (Users, error)
+	ListTrip(ctx context.Context, arg ListTripParams) ([]Trips, error)
+	ListUser(ctx context.Context, arg ListUserParams) ([]Users, error)
+	UpdateFellowTraveler(ctx context.Context, arg UpdateFellowTravelerParams) (FellowTravelers, error)
+	UpdateTrip(ctx context.Context, arg UpdateTripParams) (Trips, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error)
 }
 
 var _ Querier = (*Queries)(nil)
