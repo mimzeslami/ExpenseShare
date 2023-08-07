@@ -33,5 +33,9 @@ func RandomEmail() string {
 }
 
 func RandomDatetime() time.Time {
-	return time.Now().Add(time.Duration(RandomInt(0, 1000)) * time.Hour).Local()
+	date, err := time.Parse("2006-01-02", "2021-01-01")
+	if err != nil {
+		panic(err)
+	}
+	return date
 }

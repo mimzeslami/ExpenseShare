@@ -6,30 +6,30 @@ package db
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type FellowTravelers struct {
-	ID              uuid.UUID     `json:"id"`
-	TripID          uuid.UUID `json:"trip_id"`
-	FellowFirstName string        `json:"fellow_first_name"`
-	FellowLastName  string        `json:"fellow_last_name"`
-	FellowEmail     string        `json:"fellow_email"`
+	ID              int64     `json:"id"`
+	TripID          int64     `json:"trip_id"`
+	FellowFirstName string    `json:"fellow_first_name"`
+	FellowLastName  string    `json:"fellow_last_name"`
+	CreatedAt       time.Time `json:"created_at"`
 }
 
 type Trips struct {
-	ID        uuid.UUID     `json:"id"`
-	TripName  string        `json:"trip_name"`
-	StartDate time.Time     `json:"start_date"`
-	EndDate   time.Time     `json:"end_date"`
-	UserID    uuid.UUID `json:"user_id"`
+	ID        int64     `json:"id"`
+	Title     string    `json:"title"`
+	UserID    int64     `json:"user_id"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Users struct {
-	ID           uuid.UUID `json:"id"`
+	ID           int64     `json:"id"`
 	FirstName    string    `json:"first_name"`
 	LastName     string    `json:"last_name"`
 	Email        string    `json:"email"`
 	PasswordHash string    `json:"password_hash"`
+	CreatedAt    time.Time `json:"created_at"`
 }

@@ -6,7 +6,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/mimzeslami/ExpenseShare/util"
+	"github.com/mimzeslami/expense_share/util"
 	"github.com/stretchr/testify/require"
 )
 

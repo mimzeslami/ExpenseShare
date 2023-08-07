@@ -1,6 +1,6 @@
 -- name: CreateTrip :one
 INSERT INTO trips (
-  trip_name,
+  title,
   start_date,
   end_date,
   user_id

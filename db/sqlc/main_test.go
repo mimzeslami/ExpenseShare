@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mimzeslami/ExpenseShare/util"
+	"github.com/mimzeslami/expense_share/util"
 )
 
 var testQueries *Queries

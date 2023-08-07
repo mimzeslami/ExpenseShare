@@ -7,52 +7,43 @@ package db
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 const createFellowTravelers = `-- name: CreateFellowTravelers :one
 INSERT INTO fellow_travelers (
   trip_id,
   fellow_first_name,
-  fellow_last_name,
-  fellow_email
+  fellow_last_name
 ) VALUES (
-  $1, $2, $3, $4
-) RETURNING id, trip_id, fellow_first_name, fellow_last_name, fellow_email
+  $1, $2, $3
+) RETURNING id, trip_id, fellow_first_name, fellow_last_name, created_at
 `
 
 type CreateFellowTravelersParams struct {
-	TripID          uuid.UUID `json:"trip_id"`
-	FellowFirstName string        `json:"fellow_first_name"`
-	FellowLastName  string        `json:"fellow_last_name"`
-	FellowEmail     string        `json:"fellow_email"`
+	TripID          int64  `json:"trip_id"`
+	FellowFirstName string `json:"fellow_first_name"`
+	FellowLastName  string `json:"fellow_last_name"`
 }
 
 func (q *Queries) CreateFellowTravelers(ctx context.Context, arg CreateFellowTravelersParams) (FellowTravelers, error) {
-	row := q.db.QueryRowContext(ctx, createFellowTravelers,
-		arg.TripID,
-		arg.FellowFirstName,
-		arg.FellowLastName,
-		arg.FellowEmail,
-	)
+	row := q.db.QueryRowContext(ctx, createFellowTravelers, arg.TripID, arg.FellowFirstName, arg.FellowLastName)
 	var i FellowTravelers
 	err := row.Scan(
 		&i.ID,
 		&i.TripID,
 		&i.FellowFirstName,
 		&i.FellowLastName,
-		&i.FellowEmail,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getFellowTraveler = `-- name: GetFellowTraveler :one
-SELECT id, trip_id, fellow_first_name, fellow_last_name, fellow_email FROM fellow_travelers
+SELECT id, trip_id, fellow_first_name, fellow_last_name, created_at FROM fellow_travelers
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetFellowTraveler(ctx context.Context, id uuid.UUID) (FellowTravelers, error) {
+func (q *Queries) GetFellowTraveler(ctx context.Context, id int64) (FellowTravelers, error) {
 	row := q.db.QueryRowContext(ctx, getFellowTraveler, id)
 	var i FellowTravelers
 	err := row.Scan(
@@ -60,17 +51,17 @@ func (q *Queries) GetFellowTraveler(ctx context.Context, id uuid.UUID) (FellowTr
 		&i.TripID,
 		&i.FellowFirstName,
 		&i.FellowLastName,
-		&i.FellowEmail,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getTripFellowTravelers = `-- name: GetTripFellowTravelers :many
-SELECT id, trip_id, fellow_first_name, fellow_last_name, fellow_email FROM fellow_travelers
+SELECT id, trip_id, fellow_first_name, fellow_last_name, created_at FROM fellow_travelers
 WHERE trip_id = $1
 `
 
-func (q *Queries) GetTripFellowTravelers(ctx context.Context, tripID uuid.UUID) ([]FellowTravelers, error) {
+func (q *Queries) GetTripFellowTravelers(ctx context.Context, tripID int64) ([]FellowTravelers, error) {
 	rows, err := q.db.QueryContext(ctx, getTripFellowTravelers, tripID)
 	if err != nil {
 		return nil, err
@@ -84,7 +75,7 @@ func (q *Queries) GetTripFellowTravelers(ctx context.Context, tripID uuid.UUID) 
 			&i.TripID,
 			&i.FellowFirstName,
 			&i.FellowLastName,
-			&i.FellowEmail,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}

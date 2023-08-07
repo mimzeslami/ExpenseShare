@@ -2,10 +2,9 @@
 INSERT INTO fellow_travelers (
   trip_id,
   fellow_first_name,
-  fellow_last_name,
-  fellow_email
+  fellow_last_name
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3
 ) RETURNING *;
 
 -- name: GetFellowTraveler :one

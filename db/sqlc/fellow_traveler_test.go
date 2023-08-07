@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mimzeslami/ExpenseShare/util"
+	"github.com/mimzeslami/expense_share/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,7 +14,6 @@ func createRandomFellowTraveller(t *testing.T) FellowTravelers {
 		TripID:          trip.ID,
 		FellowFirstName: util.RandomString(6),
 		FellowLastName:  util.RandomString(6),
-		FellowEmail:     util.RandomEmail(),
 	}
 	fellowTraveller, err := testQueries.CreateFellowTravelers(context.Background(), arg)
 	require.NoError(t, err)
@@ -41,7 +40,6 @@ func TestGetFellowTravelers(t *testing.T) {
 	require.Equal(t, fellowTraveller1.TripID, fellowTraveller2.TripID)
 	require.Equal(t, fellowTraveller1.FellowFirstName, fellowTraveller2.FellowFirstName)
 	require.Equal(t, fellowTraveller1.FellowLastName, fellowTraveller2.FellowLastName)
-	require.Equal(t, fellowTraveller1.FellowEmail, fellowTraveller2.FellowEmail)
 }
 
 func TestGetTripFellowTravelers(t *testing.T) {
@@ -53,5 +51,4 @@ func TestGetTripFellowTravelers(t *testing.T) {
 	require.Equal(t, fellowTraveller1.TripID, fellowTraveller2[0].TripID)
 	require.Equal(t, fellowTraveller1.FellowFirstName, fellowTraveller2[0].FellowFirstName)
 	require.Equal(t, fellowTraveller1.FellowLastName, fellowTraveller2[0].FellowLastName)
-	require.Equal(t, fellowTraveller1.FellowEmail, fellowTraveller2[0].FellowEmail)
 }

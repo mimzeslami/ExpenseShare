@@ -8,31 +8,29 @@ package db
 import (
 	"context"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const createTrip = `-- name: CreateTrip :one
 INSERT INTO trips (
-  trip_name,
+  title,
   start_date,
   end_date,
   user_id
 ) VALUES (
   $1, $2, $3, $4
-) RETURNING id, trip_name, start_date, end_date, user_id
+) RETURNING id, title, user_id, start_date, end_date, created_at
 `
 
 type CreateTripParams struct {
-	TripName  string        `json:"trip_name"`
-	StartDate time.Time     `json:"start_date"`
-	EndDate   time.Time     `json:"end_date"`
-	UserID    uuid.UUID `json:"user_id"`
+	Title     string    `json:"title"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+	UserID    int64     `json:"user_id"`
 }
 
 func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, error) {
 	row := q.db.QueryRowContext(ctx, createTrip,
-		arg.TripName,
+		arg.Title,
 		arg.StartDate,
 		arg.EndDate,
 		arg.UserID,
@@ -40,28 +38,30 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, 
 	var i Trips
 	err := row.Scan(
 		&i.ID,
-		&i.TripName,
+		&i.Title,
+		&i.UserID,
 		&i.StartDate,
 		&i.EndDate,
-		&i.UserID,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getTrip = `-- name: GetTrip :one
-SELECT id, trip_name, start_date, end_date, user_id FROM trips
+SELECT id, title, user_id, start_date, end_date, created_at FROM trips
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetTrip(ctx context.Context, id uuid.UUID) (Trips, error) {
+func (q *Queries) GetTrip(ctx context.Context, id int64) (Trips, error) {
 	row := q.db.QueryRowContext(ctx, getTrip, id)
 	var i Trips
 	err := row.Scan(
 		&i.ID,
-		&i.TripName,
+		&i.Title,
+		&i.UserID,
 		&i.StartDate,
 		&i.EndDate,
-		&i.UserID,
+		&i.CreatedAt,
 	)
 	return i, err
 }
