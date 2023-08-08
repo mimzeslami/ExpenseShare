@@ -49,21 +49,31 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, 
 
 const deleteTrip = `-- name: DeleteTrip :exec
 DELETE FROM trips
-WHERE id = $1
+WHERE id = $1 AND user_id = $2
 `
 
-func (q *Queries) DeleteTrip(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteTrip, id)
+type DeleteTripParams struct {
+	ID     int64 `json:"id"`
+	UserID int64 `json:"user_id"`
+}
+
+func (q *Queries) DeleteTrip(ctx context.Context, arg DeleteTripParams) error {
+	_, err := q.db.ExecContext(ctx, deleteTrip, arg.ID, arg.UserID)
 	return err
 }
 
 const getTrip = `-- name: GetTrip :one
 SELECT id, title, user_id, start_date, end_date, created_at FROM trips
-WHERE id = $1 LIMIT 1
+WHERE id = $1 AND user_id = $2 LIMIT 1
 `
 
-func (q *Queries) GetTrip(ctx context.Context, id int64) (Trips, error) {
-	row := q.db.QueryRowContext(ctx, getTrip, id)
+type GetTripParams struct {
+	ID     int64 `json:"id"`
+	UserID int64 `json:"user_id"`
+}
+
+func (q *Queries) GetTrip(ctx context.Context, arg GetTripParams) (Trips, error) {
+	row := q.db.QueryRowContext(ctx, getTrip, arg.ID, arg.UserID)
 	var i Trips
 	err := row.Scan(
 		&i.ID,
@@ -120,25 +130,27 @@ func (q *Queries) ListTrip(ctx context.Context, arg ListTripParams) ([]Trips, er
 
 const updateTrip = `-- name: UpdateTrip :one
 UPDATE trips SET
-  title = $2,
-  start_date = $3,
-  end_date = $4
-WHERE id = $1 RETURNING id, title, user_id, start_date, end_date, created_at
+  title = $1,
+  start_date = $2,
+  end_date = $3
+WHERE id = $4 AND user_id =$5 RETURNING id, title, user_id, start_date, end_date, created_at
 `
 
 type UpdateTripParams struct {
-	ID        int64     `json:"id"`
 	Title     string    `json:"title"`
 	StartDate time.Time `json:"start_date"`
 	EndDate   time.Time `json:"end_date"`
+	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id"`
 }
 
 func (q *Queries) UpdateTrip(ctx context.Context, arg UpdateTripParams) (Trips, error) {
 	row := q.db.QueryRowContext(ctx, updateTrip,
-		arg.ID,
 		arg.Title,
 		arg.StartDate,
 		arg.EndDate,
+		arg.ID,
+		arg.UserID,
 	)
 	var i Trips
 	err := row.Scan(

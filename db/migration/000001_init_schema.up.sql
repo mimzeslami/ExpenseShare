@@ -31,6 +31,8 @@ ALTER TABLE "trips" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "fellow_travelers" ADD FOREIGN KEY ("trip_id") REFERENCES "trips" ("id");
 
+ALTER TABLE "users" ADD CONSTRAINT "email_key" UNIQUE ("email");
+
 CREATE INDEX ON "users" ("email");
 
 CREATE INDEX ON "trips" ("user_id");

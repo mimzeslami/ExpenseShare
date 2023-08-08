@@ -16,12 +16,12 @@ type Querier interface {
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
 	DeleteFellowTraveler(ctx context.Context, id int64) error
-	DeleteTrip(ctx context.Context, id int64) error
+	DeleteTrip(ctx context.Context, arg DeleteTripParams) error
 	DeleteTripFellowTravelers(ctx context.Context, tripID int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	GetFellowTraveler(ctx context.Context, id int64) (FellowTravelers, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Sessions, error)
-	GetTrip(ctx context.Context, id int64) (Trips, error)
+	GetTrip(ctx context.Context, arg GetTripParams) (Trips, error)
 	GetTripFellowTravelers(ctx context.Context, tripID int64) ([]FellowTravelers, error)
 	GetUser(ctx context.Context, email string) (Users, error)
 	ListTrip(ctx context.Context, arg ListTripParams) ([]Trips, error)

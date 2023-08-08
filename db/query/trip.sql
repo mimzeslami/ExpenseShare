@@ -10,7 +10,7 @@ INSERT INTO trips (
 
 -- name: GetTrip :one
 SELECT * FROM trips
-WHERE id = $1 LIMIT 1;
+WHERE id = $1 AND user_id = $2 LIMIT 1;
 
 -- name: ListTrip :many
 SELECT * FROM trips
@@ -19,14 +19,14 @@ LIMIT $2 OFFSET $3;
 
 -- name: UpdateTrip :one
 UPDATE trips SET
-  title = $2,
-  start_date = $3,
-  end_date = $4
-WHERE id = $1 RETURNING *;
+  title = $1,
+  start_date = $2,
+  end_date = $3
+WHERE id = $4 AND user_id =$5 RETURNING *;
 
 -- name: DeleteTrip :exec
 DELETE FROM trips
-WHERE id = $1;
+WHERE id = $1 AND user_id = $2;
 
 
 

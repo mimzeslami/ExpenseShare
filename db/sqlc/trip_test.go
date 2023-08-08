@@ -35,7 +35,11 @@ func TestCreateTrip(t *testing.T) {
 func TestGetTrip(t *testing.T) {
 	user := createRandomUser(t)
 	trip1 := createRandomTrip(t, user)
-	trip2, err := testQueries.GetTrip(context.Background(), trip1.ID)
+	arg := GetTripParams{
+		ID:     trip1.ID,
+		UserID: user.ID,
+	}
+	trip2, err := testQueries.GetTrip(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, trip2)
 	require.Equal(t, trip1.Title, trip2.Title)
@@ -69,6 +73,7 @@ func TestUpdateTrip(t *testing.T) {
 		Title:     util.RandomString(6),
 		StartDate: util.RandomDatetime(),
 		EndDate:   util.RandomDatetime(),
+		UserID:    user.ID,
 	}
 	trip2, err := testQueries.UpdateTrip(context.Background(), arg)
 	require.NoError(t, err)
@@ -83,10 +88,19 @@ func TestDeleteTrip(t *testing.T) {
 	user := createRandomUser(t)
 	trip := createRandomTrip(t, user)
 
-	err := testQueries.DeleteTrip(context.Background(), trip.ID)
+	deleteArg := DeleteTripParams{
+		ID:     trip.ID,
+		UserID: user.ID,
+	}
+
+	err := testQueries.DeleteTrip(context.Background(), deleteArg)
 	require.NoError(t, err)
 
-	trip1, err := testQueries.GetTrip(context.Background(), trip.ID)
+	arg := GetTripParams{
+		ID:     trip.ID,
+		UserID: user.ID,
+	}
+	trip1, err := testQueries.GetTrip(context.Background(), arg)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, trip1)

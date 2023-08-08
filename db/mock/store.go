@@ -111,7 +111,7 @@ func (mr *MockStoreMockRecorder) DeleteFellowTraveler(arg0, arg1 interface{}) *g
 }
 
 // DeleteTrip mocks base method.
-func (m *MockStore) DeleteTrip(arg0 context.Context, arg1 int64) error {
+func (m *MockStore) DeleteTrip(arg0 context.Context, arg1 db.DeleteTripParams) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTrip", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -183,7 +183,7 @@ func (mr *MockStoreMockRecorder) GetSession(arg0, arg1 interface{}) *gomock.Call
 }
 
 // GetTrip mocks base method.
-func (m *MockStore) GetTrip(arg0 context.Context, arg1 int64) (db.Trips, error) {
+func (m *MockStore) GetTrip(arg0 context.Context, arg1 db.GetTripParams) (db.Trips, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTrip", arg0, arg1)
 	ret0, _ := ret[0].(db.Trips)

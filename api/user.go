@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	db "github.com/mimzeslami/expense_share/db/sqlc"
 	"github.com/mimzeslami/expense_share/util"
 )
@@ -72,6 +73,13 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
+		if pgErr, ok := err.(*pq.Error); ok {
+			if pgErr.Code == db.UniqueViolation {
+				ctx.JSON(http.StatusForbidden, errorResponse(errors.New("user already exists with this email")))
+				return
+			}
+		}
+
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -91,7 +99,7 @@ func (server *Server) login(ctx *gin.Context) {
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("Invalid email or password")))
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -99,7 +107,7 @@ func (server *Server) login(ctx *gin.Context) {
 	}
 
 	if err := util.CheckPassword(req.Password, user.PasswordHash); err != nil {
-		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("Invalid email or password")))
 		return
 	}
 
