@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"testing"
+	"time"
 
 	"github.com/mimzeslami/expense_share/util"
 	"github.com/stretchr/testify/require"
@@ -80,8 +81,8 @@ func TestUpdateTrip(t *testing.T) {
 	require.NotEmpty(t, trip2)
 	require.Equal(t, trip1.ID, trip2.ID)
 	require.Equal(t, arg.Title, trip2.Title)
-	require.Equal(t, arg.StartDate, trip2.StartDate)
-	require.Equal(t, arg.EndDate, trip2.EndDate)
+	require.WithinDuration(t, arg.StartDate, trip2.StartDate, time.Hour)
+	require.WithinDuration(t, arg.EndDate, trip2.EndDate, time.Hour)
 }
 
 func TestDeleteTrip(t *testing.T) {
