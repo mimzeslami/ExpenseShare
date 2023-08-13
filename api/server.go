@@ -45,6 +45,12 @@ func (server *Server) setupRouter() {
 	authRoutes.PUT("/trips", server.updateTrip)
 	authRoutes.DELETE("/trips/:id", server.deleteTrip)
 
+	authRoutes.GET("/fellow_travelers/:id", server.getFellowTraveler)
+	authRoutes.POST("/fellow_travelers", server.createFellowTraveler)
+	authRoutes.GET("/trips/fellow_travelers/:trip_id", server.listFellowTraveler)
+	authRoutes.PUT("/fellow_travelers", server.updateFellowTraveler)
+	authRoutes.DELETE("/fellow_travelers/:id", server.deleteFellowTraveler)
+
 	server.router = router
 }
 

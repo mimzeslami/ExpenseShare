@@ -39,8 +39,7 @@ func (q *Queries) CreateFellowTravelers(ctx context.Context, arg CreateFellowTra
 }
 
 const deleteFellowTraveler = `-- name: DeleteFellowTraveler :exec
-DELETE FROM fellow_travelers
-WHERE id = $1
+DELETE FROM fellow_travelers WHERE id = $1
 `
 
 func (q *Queries) DeleteFellowTraveler(ctx context.Context, id int64) error {
@@ -59,12 +58,18 @@ func (q *Queries) DeleteTripFellowTravelers(ctx context.Context, tripID int64) e
 }
 
 const getFellowTraveler = `-- name: GetFellowTraveler :one
-SELECT id, trip_id, fellow_first_name, fellow_last_name, created_at FROM fellow_travelers
-WHERE id = $1 LIMIT 1
+SELECT fellow_travelers.id, fellow_travelers.trip_id, fellow_travelers.fellow_first_name, fellow_travelers.fellow_last_name, fellow_travelers.created_at FROM fellow_travelers
+LEFT JOIN trips ON fellow_travelers.trip_id = trips.id
+WHERE fellow_travelers.id = $1 AND trips.user_id = $2 LIMIT 1
 `
 
-func (q *Queries) GetFellowTraveler(ctx context.Context, id int64) (FellowTravelers, error) {
-	row := q.db.QueryRowContext(ctx, getFellowTraveler, id)
+type GetFellowTravelerParams struct {
+	ID     int64 `json:"id"`
+	UserID int64 `json:"user_id"`
+}
+
+func (q *Queries) GetFellowTraveler(ctx context.Context, arg GetFellowTravelerParams) (FellowTravelers, error) {
+	row := q.db.QueryRowContext(ctx, getFellowTraveler, arg.ID, arg.UserID)
 	var i FellowTravelers
 	err := row.Scan(
 		&i.ID,
@@ -77,12 +82,18 @@ func (q *Queries) GetFellowTraveler(ctx context.Context, id int64) (FellowTravel
 }
 
 const getTripFellowTravelers = `-- name: GetTripFellowTravelers :many
-SELECT id, trip_id, fellow_first_name, fellow_last_name, created_at FROM fellow_travelers
-WHERE trip_id = $1
+SELECT fellow_travelers.id, fellow_travelers.trip_id, fellow_travelers.fellow_first_name, fellow_travelers.fellow_last_name, fellow_travelers.created_at  FROM fellow_travelers
+LEFT JOIN trips ON fellow_travelers.trip_id = trips.id
+WHERE fellow_travelers.trip_id = $1 AND trips.user_id = $2
 `
 
-func (q *Queries) GetTripFellowTravelers(ctx context.Context, tripID int64) ([]FellowTravelers, error) {
-	rows, err := q.db.QueryContext(ctx, getTripFellowTravelers, tripID)
+type GetTripFellowTravelersParams struct {
+	TripID int64 `json:"trip_id"`
+	UserID int64 `json:"user_id"`
+}
+
+func (q *Queries) GetTripFellowTravelers(ctx context.Context, arg GetTripFellowTravelersParams) ([]FellowTravelers, error) {
+	rows, err := q.db.QueryContext(ctx, getTripFellowTravelers, arg.TripID, arg.UserID)
 	if err != nil {
 		return nil, err
 	}

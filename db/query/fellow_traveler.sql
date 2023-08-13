@@ -8,13 +8,17 @@ INSERT INTO fellow_travelers (
 ) RETURNING *;
 
 -- name: GetFellowTraveler :one
-SELECT * FROM fellow_travelers
-WHERE id = $1 LIMIT 1;
+SELECT fellow_travelers.* FROM fellow_travelers
+LEFT JOIN trips ON fellow_travelers.trip_id = trips.id
+WHERE fellow_travelers.id = $1 AND trips.user_id = $2 LIMIT 1;
+
 
 
 -- name: GetTripFellowTravelers :many
-SELECT * FROM fellow_travelers
-WHERE trip_id = $1;
+SELECT fellow_travelers.*  FROM fellow_travelers
+LEFT JOIN trips ON fellow_travelers.trip_id = trips.id
+WHERE fellow_travelers.trip_id = $1 AND trips.user_id = $2;
+
 
 -- name: UpdateFellowTraveler :one
 UPDATE fellow_travelers SET
@@ -23,8 +27,8 @@ UPDATE fellow_travelers SET
 WHERE id = $1 RETURNING *;
 
 -- name: DeleteFellowTraveler :exec
-DELETE FROM fellow_travelers
-WHERE id = $1;
+DELETE FROM fellow_travelers WHERE id = $1;
+
 
 -- name: DeleteTripFellowTravelers :exec
 DELETE FROM fellow_travelers

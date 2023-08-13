@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomFellowTraveller(t *testing.T) FellowTravelers {
-	user := createRandomUser(t)
+func createRandomFellowTraveller(t *testing.T, user Users) FellowTravelers {
+
 	trip := createRandomTrip(t, user)
 	arg := CreateFellowTravelersParams{
 		TripID:          trip.ID,
@@ -30,12 +30,19 @@ func createRandomFellowTraveller(t *testing.T) FellowTravelers {
 }
 
 func TestCreateFellowTravelers(t *testing.T) {
-	createRandomFellowTraveller(t)
+	user := createRandomUser(t)
+	createRandomFellowTraveller(t, user)
 }
 
 func TestGetFellowTravelers(t *testing.T) {
-	fellowTraveller1 := createRandomFellowTraveller(t)
-	fellowTraveller2, err := testQueries.GetFellowTraveler(context.Background(), fellowTraveller1.ID)
+	user := createRandomUser(t)
+
+	fellowTraveller1 := createRandomFellowTraveller(t, user)
+	arg := GetFellowTravelerParams{
+		ID:     fellowTraveller1.ID,
+		UserID: user.ID,
+	}
+	fellowTraveller2, err := testQueries.GetFellowTraveler(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, fellowTraveller2)
 	require.Equal(t, fellowTraveller1.ID, fellowTraveller2.ID)
@@ -45,8 +52,15 @@ func TestGetFellowTravelers(t *testing.T) {
 }
 
 func TestGetTripFellowTravelers(t *testing.T) {
-	fellowTraveller1 := createRandomFellowTraveller(t)
-	fellowTraveller2, err := testQueries.GetTripFellowTravelers(context.Background(), fellowTraveller1.TripID)
+	user := createRandomUser(t)
+
+	fellowTraveller1 := createRandomFellowTraveller(t, user)
+	arg := GetTripFellowTravelersParams{
+		TripID: fellowTraveller1.TripID,
+		UserID: user.ID,
+	}
+	fellowTraveller2, err := testQueries.GetTripFellowTravelers(context.Background(), arg)
+
 	require.NoError(t, err)
 	require.NotEmpty(t, fellowTraveller2)
 	require.Equal(t, fellowTraveller1.ID, fellowTraveller2[0].ID)
@@ -56,10 +70,15 @@ func TestGetTripFellowTravelers(t *testing.T) {
 }
 
 func TestDeleteFeeellowTraveler(t *testing.T) {
-	fellowTraveller1 := createRandomFellowTraveller(t)
+	user := createRandomUser(t)
+	fellowTraveller1 := createRandomFellowTraveller(t, user)
 	err := testQueries.DeleteFellowTraveler(context.Background(), fellowTraveller1.ID)
+	arg := GetFellowTravelerParams{
+		ID:     fellowTraveller1.ID,
+		UserID: user.ID,
+	}
 	require.NoError(t, err)
-	fellowTraveller2, err := testQueries.GetFellowTraveler(context.Background(), fellowTraveller1.ID)
+	fellowTraveller2, err := testQueries.GetFellowTraveler(context.Background(), arg)
 	require.Error(t, err)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 	require.Empty(t, fellowTraveller2)
@@ -67,17 +86,24 @@ func TestDeleteFeeellowTraveler(t *testing.T) {
 }
 
 func TestDeleteTripFellowTravelers(t *testing.T) {
-	fellowTraveller1 := createRandomFellowTraveller(t)
+	user := createRandomUser(t)
+	fellowTraveller1 := createRandomFellowTraveller(t, user)
+	arg := GetFellowTravelerParams{
+		ID:     fellowTraveller1.ID,
+		UserID: user.ID,
+	}
 	err := testQueries.DeleteTripFellowTravelers(context.Background(), fellowTraveller1.TripID)
 	require.NoError(t, err)
-	fellowTraveller2, err := testQueries.GetFellowTraveler(context.Background(), fellowTraveller1.ID)
+
+	fellowTraveller2, err := testQueries.GetFellowTraveler(context.Background(), arg)
 	require.Error(t, err)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 	require.Empty(t, fellowTraveller2)
 }
 
 func TestUpdateFellowTraveler(t *testing.T) {
-	fellowTraveller1 := createRandomFellowTraveller(t)
+	user := createRandomUser(t)
+	fellowTraveller1 := createRandomFellowTraveller(t, user)
 	arg := UpdateFellowTravelerParams{
 		ID:              fellowTraveller1.ID,
 		FellowFirstName: util.RandomString(6),

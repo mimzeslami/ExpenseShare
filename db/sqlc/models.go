@@ -10,6 +10,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type Expenses struct {
+	ID              int64     `json:"id"`
+	TripID          int64     `json:"trip_id"`
+	PayerTravelerID int64     `json:"payer_traveler_id"`
+	Amount          string    `json:"amount"`
+	Description     string    `json:"description"`
+	CreatedAt       time.Time `json:"created_at"`
+}
+
 type FellowTravelers struct {
 	ID              int64     `json:"id"`
 	TripID          int64     `json:"trip_id"`

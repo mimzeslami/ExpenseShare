@@ -2,6 +2,7 @@ package util
 
 import (
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -30,6 +31,10 @@ func RandomUser() string {
 
 func RandomEmail() string {
 	return RandomString(6) + "@gmail.com"
+}
+
+func RandomMoney() string {
+	return strconv.Itoa(RandomInt(1, 999999))
 }
 
 func RandomDatetime() time.Time {

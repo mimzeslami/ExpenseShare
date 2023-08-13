@@ -11,21 +11,27 @@ import (
 )
 
 type Querier interface {
+	CreateExpense(ctx context.Context, arg CreateExpenseParams) (Expenses, error)
 	CreateFellowTravelers(ctx context.Context, arg CreateFellowTravelersParams) (FellowTravelers, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Sessions, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
+	DeleteExpense(ctx context.Context, id int64) error
 	DeleteFellowTraveler(ctx context.Context, id int64) error
 	DeleteTrip(ctx context.Context, arg DeleteTripParams) error
+	DeleteTripExpenses(ctx context.Context, tripID int64) error
 	DeleteTripFellowTravelers(ctx context.Context, tripID int64) error
 	DeleteUser(ctx context.Context, id int64) error
-	GetFellowTraveler(ctx context.Context, id int64) (FellowTravelers, error)
+	GetExpense(ctx context.Context, arg GetExpenseParams) (Expenses, error)
+	GetFellowTraveler(ctx context.Context, arg GetFellowTravelerParams) (FellowTravelers, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Sessions, error)
 	GetTrip(ctx context.Context, arg GetTripParams) (Trips, error)
-	GetTripFellowTravelers(ctx context.Context, tripID int64) ([]FellowTravelers, error)
+	GetTripExpenses(ctx context.Context, arg GetTripExpensesParams) ([]Expenses, error)
+	GetTripFellowTravelers(ctx context.Context, arg GetTripFellowTravelersParams) ([]FellowTravelers, error)
 	GetUser(ctx context.Context, email string) (Users, error)
 	ListTrip(ctx context.Context, arg ListTripParams) ([]Trips, error)
 	ListUser(ctx context.Context, arg ListUserParams) ([]Users, error)
+	UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expenses, error)
 	UpdateFellowTraveler(ctx context.Context, arg UpdateFellowTravelerParams) (FellowTravelers, error)
 	UpdateTrip(ctx context.Context, arg UpdateTripParams) (Trips, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error)
