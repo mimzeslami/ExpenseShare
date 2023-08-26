@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -46,7 +47,32 @@ func (server *Server) deleteFellowTraveler(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	err := server.store.DeleteFellowTraveler(ctx, req.ID)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	fellowTravelers, err := server.store.GetFellowTraveler(ctx, db.GetFellowTravelerParams{
+		ID:     req.ID,
+		UserID: authPayload.UserId,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, errorResponse(err))
+		return
+	}
+
+	trip, err := server.store.GetTrip(ctx, db.GetTripParams{
+		ID:     fellowTravelers.TripID,
+		UserID: authPayload.UserId,
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, errorResponse(err))
+		return
+	}
+
+	if trip.UserID != authPayload.UserId {
+		ctx.JSON(http.StatusForbidden, errorResponse(err))
+		return
+	}
+
+	err = server.store.DeleteFellowTraveler(ctx, req.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -119,6 +145,10 @@ func (server *Server) getFellowTraveler(ctx *gin.Context) {
 	}
 	fellowTraveler, err := server.store.GetFellowTraveler(ctx, arg)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
