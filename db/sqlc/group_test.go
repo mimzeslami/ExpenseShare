@@ -9,9 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomGroup(t *testing.T) Groups {
+func createRandomGroup(t *testing.T, user Users) Groups {
 	groupCategory := createRandomGroupCategory(t)
-	user := createRandomUser(t)
 
 	arg := CreateGroupParams{
 		Name:        util.RandomString(6),
@@ -33,12 +32,18 @@ func createRandomGroup(t *testing.T) Groups {
 }
 
 func TestCreateGroup(t *testing.T) {
-	createRandomGroup(t)
+	user := createRandomUser(t)
+	createRandomGroup(t, user)
 }
 
 func TestGetGroupById(t *testing.T) {
-	group1 := createRandomGroup(t)
-	group2, err := testQueries.GetGroupByID(context.Background(), group1.ID)
+	user := createRandomUser(t)
+	group1 := createRandomGroup(t, user)
+	arg := GetGroupByIDParams{
+		ID:          group1.ID,
+		CreatedByID: group1.CreatedByID,
+	}
+	group2, err := testQueries.GetGroupByID(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, group2)
 
@@ -50,13 +55,15 @@ func TestGetGroupById(t *testing.T) {
 }
 
 func TestListGroup(t *testing.T) {
+	user := createRandomUser(t)
 	for i := 0; i < 10; i++ {
-		createRandomGroup(t)
+		createRandomGroup(t, user)
 	}
 
 	arg := ListGroupsParams{
-		Limit:  5,
-		Offset: 5,
+		Limit:       5,
+		Offset:      5,
+		CreatedByID: user.ID,
 	}
 
 	groups, err := testQueries.ListGroups(context.Background(), arg)
@@ -69,17 +76,26 @@ func TestListGroup(t *testing.T) {
 }
 
 func TestDeleteGroup(t *testing.T) {
-	group1 := createRandomGroup(t)
-	err := testQueries.DeleteGroup(context.Background(), group1.ID)
+	user := createRandomUser(t)
+	group1 := createRandomGroup(t, user)
+	arg := DeleteGroupParams{
+		ID:          group1.ID,
+		CreatedByID: group1.CreatedByID,
+	}
+	err := testQueries.DeleteGroup(context.Background(), arg)
 	require.NoError(t, err)
-
-	group2, err := testQueries.GetGroupByID(context.Background(), group1.ID)
+	arg2 := GetGroupByIDParams{
+		ID:          group1.ID,
+		CreatedByID: group1.CreatedByID,
+	}
+	group2, err := testQueries.GetGroupByID(context.Background(), arg2)
 	require.Error(t, err)
 	require.Empty(t, group2)
 }
 
 func TestUpdateGroup(t *testing.T) {
-	group1 := createRandomGroup(t)
+	user := createRandomUser(t)
+	group1 := createRandomGroup(t, user)
 
 	arg := UpdateGroupParams{
 		ID:          group1.ID,

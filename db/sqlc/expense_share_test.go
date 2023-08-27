@@ -35,13 +35,16 @@ func createRandomExpenseShare(t *testing.T, expense Expenses) ExpenseShares {
 }
 
 func TestCreateExpenseShare(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	expense := createRandomExpense(t, group)
 	createRandomExpenseShare(t, expense)
 }
 
 func TestGetExpenseShareByID(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+
+	group := createRandomGroup(t, user)
 	expense := createRandomExpense(t, group)
 	expenseShare1 := createRandomExpenseShare(t, expense)
 	expenseShare2, err := testQueries.GetExpenseShareByID(context.Background(), expenseShare1.ID)
@@ -57,7 +60,8 @@ func TestGetExpenseShareByID(t *testing.T) {
 }
 
 func TestListExpenseShares(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	expense := createRandomExpense(t, group)
 	for i := 0; i < 10; i++ {
 		createRandomExpenseShare(t, expense)
@@ -79,7 +83,8 @@ func TestListExpenseShares(t *testing.T) {
 }
 
 func TestDeleteExpenseShare(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	expense := createRandomExpense(t, group)
 	expenseShare1 := createRandomExpenseShare(t, expense)
 	err := testQueries.DeleteExpenseShare(context.Background(), expenseShare1.ID)
@@ -91,7 +96,9 @@ func TestDeleteExpenseShare(t *testing.T) {
 }
 
 func TestUpdateExpenseShare(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+
+	group := createRandomGroup(t, user)
 	expense := createRandomExpense(t, group)
 	expenseShare1 := createRandomExpenseShare(t, expense)
 

@@ -51,23 +51,33 @@ func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group
 
 const deleteGroup = `-- name: DeleteGroup :exec
 DELETE FROM groups
-WHERE id = $1
+WHERE id = $1 AND created_by_id =$2
 `
 
+type DeleteGroupParams struct {
+	ID          int64 `json:"id"`
+	CreatedByID int64 `json:"created_by_id"`
+}
+
 // Delete a group by ID
-func (q *Queries) DeleteGroup(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteGroup, id)
+func (q *Queries) DeleteGroup(ctx context.Context, arg DeleteGroupParams) error {
+	_, err := q.db.ExecContext(ctx, deleteGroup, arg.ID, arg.CreatedByID)
 	return err
 }
 
 const getGroupByID = `-- name: GetGroupByID :one
 SELECT id, name, category_id, image_path, created_by_id, created_at FROM groups
-WHERE id = $1 LIMIT 1
+WHERE id = $1 AND created_by_id =$2 LIMIT 1
 `
 
+type GetGroupByIDParams struct {
+	ID          int64 `json:"id"`
+	CreatedByID int64 `json:"created_by_id"`
+}
+
 // Get a group by ID
-func (q *Queries) GetGroupByID(ctx context.Context, id int64) (Groups, error) {
-	row := q.db.QueryRowContext(ctx, getGroupByID, id)
+func (q *Queries) GetGroupByID(ctx context.Context, arg GetGroupByIDParams) (Groups, error) {
+	row := q.db.QueryRowContext(ctx, getGroupByID, arg.ID, arg.CreatedByID)
 	var i Groups
 	err := row.Scan(
 		&i.ID,
@@ -82,17 +92,19 @@ func (q *Queries) GetGroupByID(ctx context.Context, id int64) (Groups, error) {
 
 const listGroups = `-- name: ListGroups :many
 SELECT id, name, category_id, image_path, created_by_id, created_at FROM groups
-LIMIT $1 OFFSET $2
+WHERE created_by_id = $1
+LIMIT $2 OFFSET $3
 `
 
 type ListGroupsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	CreatedByID int64 `json:"created_by_id"`
+	Limit       int32 `json:"limit"`
+	Offset      int32 `json:"offset"`
 }
 
 // List groups with pagination
 func (q *Queries) ListGroups(ctx context.Context, arg ListGroupsParams) ([]Groups, error) {
-	rows, err := q.db.QueryContext(ctx, listGroups, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listGroups, arg.CreatedByID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -123,25 +135,27 @@ func (q *Queries) ListGroups(ctx context.Context, arg ListGroupsParams) ([]Group
 
 const updateGroup = `-- name: UpdateGroup :one
 UPDATE groups SET
-  name = $2,
-  category_id = $3,
-  created_by_id = $4
-WHERE id = $1 RETURNING id, name, category_id, image_path, created_by_id, created_at
+  name = $1,
+  category_id = $2,
+  image_path = $3
+WHERE id = $4 AND created_by_id =$5 RETURNING id, name, category_id, image_path, created_by_id, created_at
 `
 
 type UpdateGroupParams struct {
-	ID          int64  `json:"id"`
 	Name        string `json:"name"`
 	CategoryID  int64  `json:"category_id"`
+	ImagePath   string `json:"image_path"`
+	ID          int64  `json:"id"`
 	CreatedByID int64  `json:"created_by_id"`
 }
 
 // Update a group by ID
 func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Groups, error) {
 	row := q.db.QueryRowContext(ctx, updateGroup,
-		arg.ID,
 		arg.Name,
 		arg.CategoryID,
+		arg.ImagePath,
+		arg.ID,
 		arg.CreatedByID,
 	)
 	var i Groups

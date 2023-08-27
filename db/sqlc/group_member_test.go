@@ -29,12 +29,14 @@ func createRandomGroupMember(t *testing.T, group Groups) GroupMembers {
 }
 
 func TestCreateGroupMember(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	createRandomGroupMember(t, group)
 }
 
 func TestGetGroupMemberById(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	groupMember1 := createRandomGroupMember(t, group)
 	groupMember2, err := testQueries.GetGroupMemberByID(context.Background(), groupMember1.ID)
 	require.NoError(t, err)
@@ -47,7 +49,8 @@ func TestGetGroupMemberById(t *testing.T) {
 }
 
 func TestListGroupMembers(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	for i := 0; i < 10; i++ {
 		createRandomGroupMember(t, group)
 	}
@@ -68,7 +71,8 @@ func TestListGroupMembers(t *testing.T) {
 }
 
 func TestDeleteGroupMember(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	groupMember1 := createRandomGroupMember(t, group)
 	err := testQueries.DeleteGroupMember(context.Background(), groupMember1.ID)
 	require.NoError(t, err)
@@ -79,7 +83,8 @@ func TestDeleteGroupMember(t *testing.T) {
 }
 
 func TestUpdateGroupMember(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	groupMember1 := createRandomGroupMember(t, group)
 
 	arg := UpdateGroupMemberParams{
@@ -95,4 +100,21 @@ func TestUpdateGroupMember(t *testing.T) {
 	require.Equal(t, groupMember1.GroupID, groupMember2.GroupID)
 	require.Equal(t, groupMember1.UserID, groupMember2.UserID)
 	require.WithinDuration(t, groupMember1.CreatedAt, groupMember2.CreatedAt, time.Second)
+}
+
+func TestDeleteGroupMembersByGroupID(t *testing.T) {
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
+	for i := 0; i < 10; i++ {
+		createRandomGroupMember(t, group)
+	}
+
+	err := testQueries.DeleteGroupMembers(context.Background(), group.ID)
+	require.NoError(t, err)
+
+	groupMembers, err := testQueries.ListGroupMembers(context.Background(), ListGroupMembersParams{
+		GroupID: group.ID,
+	})
+	require.NoError(t, err)
+	require.Len(t, groupMembers, 0)
 }

@@ -41,10 +41,12 @@ type Querier interface {
 	// Delete an expense share by ID
 	DeleteExpenseShare(ctx context.Context, id int64) error
 	// Delete a group by ID
-	DeleteGroup(ctx context.Context, id int64) error
+	DeleteGroup(ctx context.Context, arg DeleteGroupParams) error
 	DeleteGroupCategory(ctx context.Context, id int64) error
 	// Delete a group member by ID
 	DeleteGroupMember(ctx context.Context, id int64) error
+	// Delete all group members for a group
+	DeleteGroupMembers(ctx context.Context, groupID int64) error
 	// Delete an invitation by ID
 	DeleteInvitation(ctx context.Context, id int64) error
 	// Delete a notification by ID
@@ -58,7 +60,7 @@ type Querier interface {
 	// Get an expense share by ID
 	GetExpenseShareByID(ctx context.Context, id int64) (ExpenseShares, error)
 	// Get a group by ID
-	GetGroupByID(ctx context.Context, id int64) (Groups, error)
+	GetGroupByID(ctx context.Context, arg GetGroupByIDParams) (Groups, error)
 	GetGroupCategory(ctx context.Context, id int64) (GroupCategories, error)
 	// Get a group member by ID
 	GetGroupMemberByID(ctx context.Context, id int64) (GroupMembers, error)

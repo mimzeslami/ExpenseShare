@@ -49,6 +49,17 @@ func (q *Queries) DeleteGroupMember(ctx context.Context, id int64) error {
 	return err
 }
 
+const deleteGroupMembers = `-- name: DeleteGroupMembers :exec
+DELETE FROM group_members
+WHERE group_id = $1
+`
+
+// Delete all group members for a group
+func (q *Queries) DeleteGroupMembers(ctx context.Context, groupID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteGroupMembers, groupID)
+	return err
+}
+
 const getGroupMemberByID = `-- name: GetGroupMemberByID :one
 SELECT id, group_id, user_id, created_at FROM group_members
 WHERE id = $1 LIMIT 1

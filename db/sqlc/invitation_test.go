@@ -38,13 +38,13 @@ func createRandomInvitation(t *testing.T, group Groups, user Users) Invitations 
 
 func TestCreateInvitation(t *testing.T) {
 	user := createRandomUser(t)
-	group := createRandomGroup(t)
+	group := createRandomGroup(t, user)
 	createRandomInvitation(t, group, user)
 }
 
 func TestGetInvitationByID(t *testing.T) {
-	group := createRandomGroup(t)
 	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	invitation1 := createRandomInvitation(t, group, user)
 	invitation2, err := testQueries.GetInvitationByID(context.Background(), invitation1.ID)
 	require.NoError(t, err)
@@ -61,7 +61,7 @@ func TestGetInvitationByID(t *testing.T) {
 
 func TestListInvitations(t *testing.T) {
 	user := createRandomUser(t)
-	group := createRandomGroup(t)
+	group := createRandomGroup(t, user)
 	for i := 0; i < 10; i++ {
 		createRandomInvitation(t, group, user)
 	}
@@ -83,7 +83,7 @@ func TestListInvitations(t *testing.T) {
 
 func TestDeleteInvitation(t *testing.T) {
 	user := createRandomUser(t)
-	group := createRandomGroup(t)
+	group := createRandomGroup(t, user)
 	invitation := createRandomInvitation(t, group, user)
 	err := testQueries.DeleteInvitation(context.Background(), invitation.ID)
 	require.NoError(t, err)
@@ -91,7 +91,7 @@ func TestDeleteInvitation(t *testing.T) {
 
 func TestUpdateInvitation(t *testing.T) {
 	user := createRandomUser(t)
-	group := createRandomGroup(t)
+	group := createRandomGroup(t, user)
 	invitation1 := createRandomInvitation(t, group, user)
 
 	arg := UpdateInvitationParams{

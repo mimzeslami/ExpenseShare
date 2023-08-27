@@ -36,12 +36,14 @@ func createRandomExpense(t *testing.T, group Groups) Expenses {
 }
 
 func TestCreateExpense(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	createRandomExpense(t, group)
 }
 
 func TestGetExpenseByID(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	expense1 := createRandomExpense(t, group)
 	expense2, err := testQueries.GetExpenseByID(context.Background(), expense1.ID)
 	require.NoError(t, err)
@@ -57,7 +59,8 @@ func TestGetExpenseByID(t *testing.T) {
 }
 
 func TestListExpense(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	for i := 0; i < 10; i++ {
 		createRandomExpense(t, group)
 	}
@@ -78,7 +81,8 @@ func TestListExpense(t *testing.T) {
 }
 
 func TestDeleteExpense(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	expense1 := createRandomExpense(t, group)
 	err := testQueries.DeleteExpense(context.Background(), expense1.ID)
 	require.NoError(t, err)
@@ -89,7 +93,8 @@ func TestDeleteExpense(t *testing.T) {
 }
 
 func TestUpdateExpense(t *testing.T) {
-	group := createRandomGroup(t)
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
 	expense1 := createRandomExpense(t, group)
 
 	arg := UpdateExpenseParams{

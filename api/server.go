@@ -45,6 +45,12 @@ func (server *Server) setupRouter() {
 	authRoutes.PUT("/group_categories", server.updateGroupCategory)
 	authRoutes.DELETE("/group_categories/:id", server.deleteGroupCategory)
 
+	authRoutes.POST("/groups", server.createGroup)
+	authRoutes.GET("/groups", server.listGroups)
+	authRoutes.GET("/groups/:id", server.getGroup)
+	authRoutes.PUT("/groups", server.updateGroup)
+	authRoutes.DELETE("/groups/:id", server.deleteGroup)
+
 	server.router = router
 }
 

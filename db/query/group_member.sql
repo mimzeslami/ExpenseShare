@@ -30,3 +30,9 @@ WHERE id = $1 RETURNING *;
 -- name: DeleteGroupMember :exec
 DELETE FROM group_members
 WHERE id = $1;
+
+
+-- Delete all group members for a group
+-- name: DeleteGroupMembers :exec
+DELETE FROM group_members
+WHERE group_id = $1;
