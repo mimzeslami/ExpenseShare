@@ -6,34 +6,103 @@ package db
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type Querier interface {
+	// currencies.sql
+	// Create a currency
+	CreateCurrency(ctx context.Context, arg CreateCurrencyParams) (Currencies, error)
+	// expenses.sql
+	// Create an expense
 	CreateExpense(ctx context.Context, arg CreateExpenseParams) (Expenses, error)
-	CreateFellowTravelers(ctx context.Context, arg CreateFellowTravelersParams) (FellowTravelers, error)
-	CreateSession(ctx context.Context, arg CreateSessionParams) (Sessions, error)
-	CreateTrip(ctx context.Context, arg CreateTripParams) (Trips, error)
+	// expense_shares.sql
+	// Create an expense share
+	CreateExpenseShare(ctx context.Context, arg CreateExpenseShareParams) (ExpenseShares, error)
+	// Groups
+	// Create a group
+	CreateGroup(ctx context.Context, arg CreateGroupParams) (Groups, error)
+	CreateGroupCategory(ctx context.Context, name string) (GroupCategories, error)
+	// GroupMembers
+	// Create a group member
+	CreateGroupMember(ctx context.Context, arg CreateGroupMemberParams) (GroupMembers, error)
+	// invitations.sql
+	// Create an invitation
+	CreateInvitation(ctx context.Context, arg CreateInvitationParams) (Invitations, error)
+	// notifications.sql
+	// Create a notification
+	CreateNotification(ctx context.Context, arg CreateNotificationParams) (Notifications, error)
+	// users.sql
+	// Create a user
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
+	// Delete a currency by ID
+	DeleteCurrency(ctx context.Context, id int64) error
+	// Delete an expense by ID
 	DeleteExpense(ctx context.Context, id int64) error
-	DeleteFellowTraveler(ctx context.Context, id int64) error
-	DeleteTrip(ctx context.Context, arg DeleteTripParams) error
-	DeleteTripExpenses(ctx context.Context, tripID int64) error
-	DeleteTripFellowTravelers(ctx context.Context, tripID int64) error
+	// Delete an expense share by ID
+	DeleteExpenseShare(ctx context.Context, id int64) error
+	// Delete a group by ID
+	DeleteGroup(ctx context.Context, id int64) error
+	DeleteGroupCategory(ctx context.Context, id int64) error
+	// Delete a group member by ID
+	DeleteGroupMember(ctx context.Context, id int64) error
+	// Delete an invitation by ID
+	DeleteInvitation(ctx context.Context, id int64) error
+	// Delete a notification by ID
+	DeleteNotification(ctx context.Context, id int64) error
+	// Delete a user by ID
 	DeleteUser(ctx context.Context, id int64) error
-	GetExpense(ctx context.Context, arg GetExpenseParams) (Expenses, error)
-	GetFellowTraveler(ctx context.Context, arg GetFellowTravelerParams) (FellowTravelers, error)
-	GetSession(ctx context.Context, id uuid.UUID) (Sessions, error)
-	GetTrip(ctx context.Context, arg GetTripParams) (Trips, error)
-	GetTripExpenses(ctx context.Context, arg GetTripExpensesParams) ([]Expenses, error)
-	GetTripFellowTravelers(ctx context.Context, arg GetTripFellowTravelersParams) ([]FellowTravelers, error)
-	GetUser(ctx context.Context, email string) (Users, error)
-	ListTrip(ctx context.Context, arg ListTripParams) ([]Trips, error)
-	ListUser(ctx context.Context, arg ListUserParams) ([]Users, error)
+	// Get a currency by ID
+	GetCurrencyByID(ctx context.Context, id int64) (Currencies, error)
+	// Get an expense by ID
+	GetExpenseByID(ctx context.Context, id int64) (Expenses, error)
+	// Get an expense share by ID
+	GetExpenseShareByID(ctx context.Context, id int64) (ExpenseShares, error)
+	// Get a group by ID
+	GetGroupByID(ctx context.Context, id int64) (Groups, error)
+	GetGroupCategory(ctx context.Context, id int64) (GroupCategories, error)
+	// Get a group member by ID
+	GetGroupMemberByID(ctx context.Context, id int64) (GroupMembers, error)
+	// Get an invitation by ID
+	GetInvitationByID(ctx context.Context, id int64) (Invitations, error)
+	// Get a notification by ID
+	GetNotificationByID(ctx context.Context, id int64) (Notifications, error)
+	// Get a user by email
+	GetUserByEmail(ctx context.Context, email string) (Users, error)
+	// Get a user by ID
+	GetUserByID(ctx context.Context, id int64) (Users, error)
+	// List currencies with pagination
+	ListCurrencies(ctx context.Context, arg ListCurrenciesParams) ([]Currencies, error)
+	// List expense shares for an expense with pagination
+	ListExpenseShares(ctx context.Context, arg ListExpenseSharesParams) ([]ExpenseShares, error)
+	// List expenses for a group with pagination
+	ListExpenses(ctx context.Context, arg ListExpensesParams) ([]Expenses, error)
+	ListGroupCategories(ctx context.Context, arg ListGroupCategoriesParams) ([]GroupCategories, error)
+	// List group members for a group with pagination
+	ListGroupMembers(ctx context.Context, arg ListGroupMembersParams) ([]GroupMembers, error)
+	// List groups with pagination
+	ListGroups(ctx context.Context, arg ListGroupsParams) ([]Groups, error)
+	// List invitations for an invitee with pagination
+	ListInvitationsForInvitee(ctx context.Context, arg ListInvitationsForInviteeParams) ([]Invitations, error)
+	// List notifications for a user with pagination
+	ListNotifications(ctx context.Context, arg ListNotificationsParams) ([]Notifications, error)
+	// List users with pagination
+	ListUsers(ctx context.Context, arg ListUsersParams) ([]Users, error)
+	// Mark a notification as read
+	MarkNotificationAsRead(ctx context.Context, id int64) error
+	// Update a currency by ID
+	UpdateCurrency(ctx context.Context, arg UpdateCurrencyParams) (Currencies, error)
+	// Update an expense by ID
 	UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expenses, error)
-	UpdateFellowTraveler(ctx context.Context, arg UpdateFellowTravelerParams) (FellowTravelers, error)
-	UpdateTrip(ctx context.Context, arg UpdateTripParams) (Trips, error)
+	// Update an expense share by ID
+	UpdateExpenseShare(ctx context.Context, arg UpdateExpenseShareParams) (ExpenseShares, error)
+	// Update a group by ID
+	UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Groups, error)
+	UpdateGroupCategory(ctx context.Context, arg UpdateGroupCategoryParams) (GroupCategories, error)
+	// Update a group member by ID
+	UpdateGroupMember(ctx context.Context, arg UpdateGroupMemberParams) (GroupMembers, error)
+	// Update an invitation by ID
+	UpdateInvitation(ctx context.Context, arg UpdateInvitationParams) (Invitations, error)
+	// Update a user by ID
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error)
 }
 

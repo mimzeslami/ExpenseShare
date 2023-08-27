@@ -39,22 +39,11 @@ func (server *Server) setupRouter() {
 	router.POST("/users/login", server.login)
 
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
-	authRoutes.GET("/trips/:id", server.getTrip)
-	authRoutes.POST("/trips", server.createTrip)
-	authRoutes.GET("/trips", server.listUserTrips)
-	authRoutes.PUT("/trips", server.updateTrip)
-	authRoutes.DELETE("/trips/:id", server.deleteTrip)
-
-	authRoutes.GET("/fellow_travelers/:id", server.getFellowTraveler)
-	authRoutes.POST("/fellow_travelers", server.createFellowTraveler)
-	authRoutes.GET("/trips/fellow_travelers/:trip_id", server.listFellowTraveler)
-	authRoutes.PUT("/fellow_travelers", server.updateFellowTraveler)
-	authRoutes.DELETE("/fellow_travelers/:id", server.deleteFellowTraveler)
-
-	authRoutes.POST("/expenses", server.createExpense)
-	authRoutes.GET("/expenses/:id", server.getExpanses)
-	authRoutes.GET("trip/expenses/:trip_id", server.getTripExpenses)
-	authRoutes.PUT("/expenses", server.updateExpense)
+	authRoutes.POST("/group_categories", server.createGroupCategory)
+	authRoutes.GET("/group_categories", server.listGroupCategories)
+	authRoutes.GET("/group_categories/:id", server.getGroupCategory)
+	authRoutes.PUT("/group_categories", server.updateGroupCategory)
+	authRoutes.DELETE("/group_categories/:id", server.deleteGroupCategory)
 
 	server.router = router
 }

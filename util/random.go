@@ -37,6 +37,10 @@ func RandomMoney() string {
 	return strconv.Itoa(RandomInt(1, 999999))
 }
 
+func RandomBool() bool {
+	return rand.Intn(2) == 1
+}
+
 func RandomDatetime() time.Time {
 	year := RandomInt(2000, 2020)
 	month := RandomInt(1, 12)

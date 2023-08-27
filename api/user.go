@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/lib/pq"
 	db "github.com/mimzeslami/expense_share/db/sqlc"
 	"github.com/mimzeslami/expense_share/util"
@@ -18,12 +17,18 @@ type createUserRequest struct {
 	LastName  string `json:"last_name" binding:"required,alphanum"`
 	Password  string `json:"password" binding:"required,min=6"`
 	Email     string `json:"email" binding:"required,email"`
+	Phone     string `json:"phone"`
+	ImagePath string `json:"image_path"`
+	TimeZone  string `json:"time_zone"`
 }
 
 type userResponse struct {
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
 	Email     string    `json:"email"`
+	Phone     string    `json:"phone"`
+	ImagePath string    `json:"image_path"`
+	TimeZone  string    `json:"time_zone"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -32,6 +37,9 @@ func newUserResponse(user db.Users) userResponse {
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
+		Phone:     user.Phone,
+		TimeZone:  user.TimeZone,
+		ImagePath: user.ImagePath,
 		CreatedAt: user.CreatedAt,
 	}
 }
@@ -42,12 +50,9 @@ type loginUserRequest struct {
 }
 
 type loginUserResponse struct {
-	SessionID             uuid.UUID    `json:"session_id"`
-	AccessToken           string       `json:"access_token"`
-	AccessTokenExpiresAt  time.Time    `json:"access_token_expires_at"`
-	RefreshToken          string       `json:"refresh_token"`
-	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
-	User                  userResponse `json:"user"`
+	AccessToken          string       `json:"access_token"`
+	AccessTokenExpiresAt time.Time    `json:"access_token_expires_at"`
+	User                 userResponse `json:"user"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -68,6 +73,9 @@ func (server *Server) createUser(ctx *gin.Context) {
 		FirstName:    req.FirstName,
 		LastName:     req.LastName,
 		Email:        req.Email,
+		Phone:        req.Phone,
+		TimeZone:     req.TimeZone,
+		ImagePath:    req.ImagePath,
 		PasswordHash: hashedPassword,
 	}
 
@@ -95,7 +103,7 @@ func (server *Server) login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	user, err := server.store.GetUser(ctx, req.Email)
+	user, err := server.store.GetUserByEmail(ctx, req.Email)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -117,34 +125,11 @@ func (server *Server) login(ctx *gin.Context) {
 		return
 	}
 
-	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(user.ID, server.config.RefreshTokenDuration)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
-		ID:           accessPayload.ID,
-		RefreshToken: refreshToken,
-		UserID:       user.ID,
-		UserAgent:    ctx.GetHeader("User-Agent"),
-		ClientIp:     ctx.ClientIP(),
-		IsBlocked:    false,
-		ExpiresAt:    accessPayload.ExpiredAt,
-	})
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
 	rsp := loginUserResponse{
-		SessionID:             session.ID,
-		AccessToken:           accessToken,
-		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
-		RefreshToken:          refreshToken,
-		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
-		User:                  newUserResponse(user),
+
+		AccessToken:          accessToken,
+		AccessTokenExpiresAt: accessPayload.ExpiredAt,
+		User:                 newUserResponse(user),
 	}
 
 	ctx.JSON(http.StatusOK, rsp)

@@ -59,13 +59,17 @@ func TestCreatUserAPI(t *testing.T) {
 		{
 			name: "OK",
 			buildStubs: func(store *mockdb.MockStore) {
-				arg := db.CreateUserParams{
-					FirstName: user.FirstName,
-					LastName:  user.LastName,
-					Email:     user.Email,
-				}
+
 				store.EXPECT().
-					CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
+					CreateUser(gomock.Any(), EqCreateUserParams(db.CreateUserParams{
+						FirstName:    user.FirstName,
+						LastName:     user.LastName,
+						Email:        user.Email,
+						Phone:        user.Phone,
+						TimeZone:     user.TimeZone,
+						ImagePath:    user.ImagePath,
+						PasswordHash: user.PasswordHash,
+					}, password)).
 					Times(1).
 					Return(user, nil)
 			},
@@ -73,13 +77,18 @@ func TestCreatUserAPI(t *testing.T) {
 				"first_name": user.FirstName,
 				"last_name":  user.LastName,
 				"email":      user.Email,
+				"phone":      user.Phone,
+				"time_zone":  user.TimeZone,
+				"image_path": user.ImagePath,
 				"password":   password,
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
+
 				requireBodyMatchUser(t, recorder.Body, user)
 			},
 		},
+
 		{
 			name: "BadRequest",
 			buildStubs: func(store *mockdb.MockStore) {
@@ -91,6 +100,9 @@ func TestCreatUserAPI(t *testing.T) {
 				"first_name": user.FirstName,
 				"last_name":  user.LastName,
 				"email":      "invalid_email",
+				"phone":      user.Phone,
+				"time_zone":  user.TimeZone,
+				"image_path": user.ImagePath,
 				"password":   password,
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -110,6 +122,9 @@ func TestCreatUserAPI(t *testing.T) {
 				"first_name": user.FirstName,
 				"last_name":  user.LastName,
 				"email":      user.Email,
+				"phone":      user.Phone,
+				"time_zone":  user.TimeZone,
+				"image_path": user.ImagePath,
 				"password":   password,
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -129,6 +144,9 @@ func TestCreatUserAPI(t *testing.T) {
 				"first_name": user.FirstName,
 				"last_name":  user.LastName,
 				"email":      user.Email,
+				"phone":      user.Phone,
+				"time_zone":  user.TimeZone,
+				"image_path": user.ImagePath,
 				"password":   password,
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -178,7 +196,7 @@ func TestLoginApi(t *testing.T) {
 			name: "InvalidJson",
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUser(gomock.Any(), gomock.Eq(user.Email)).
+					GetUserByEmail(gomock.Any(), gomock.Eq(user.Email)).
 					Times(0)
 			},
 			body: gin.H{
@@ -193,7 +211,7 @@ func TestLoginApi(t *testing.T) {
 			name: "InvalidEmailCredentials",
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUser(gomock.Any(), gomock.Eq(user.Email)).
+					GetUserByEmail(gomock.Any(), gomock.Eq(user.Email)).
 					Times(1).
 					Return(db.Users{}, sql.ErrNoRows)
 			},
@@ -209,7 +227,7 @@ func TestLoginApi(t *testing.T) {
 			name: "InvalidPasswordCredentials",
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUser(gomock.Any(), gomock.Eq(user.Email)).
+					GetUserByEmail(gomock.Any(), gomock.Eq(user.Email)).
 					Times(1).
 					Return(user, nil)
 			},
@@ -225,7 +243,7 @@ func TestLoginApi(t *testing.T) {
 			name: "InternalError",
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUser(gomock.Any(), gomock.Eq(user.Email)).
+					GetUserByEmail(gomock.Any(), gomock.Eq(user.Email)).
 					Times(1).
 					Return(db.Users{}, sql.ErrConnDone)
 			},
@@ -241,12 +259,9 @@ func TestLoginApi(t *testing.T) {
 			name: "OK",
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUser(gomock.Any(), gomock.Eq(user.Email)).
+					GetUserByEmail(gomock.Any(), gomock.Eq(user.Email)).
 					Times(1).
 					Return(user, nil)
-				store.EXPECT().
-					CreateSession(gomock.Any(), gomock.Any()).
-					Times(1)
 
 			},
 			body: gin.H{
@@ -297,7 +312,11 @@ func randomUser(t *testing.T) (user db.Users, password string) {
 		FirstName:    util.RandomString(6),
 		LastName:     util.RandomString(6),
 		Email:        util.RandomEmail(),
+		Phone:        util.RandomString(6),
+		TimeZone:     util.RandomString(6),
+		ImagePath:    util.RandomString(6),
 		PasswordHash: hashedPassword,
+		CreatedAt:    util.RandomDatetime(),
 	}
 	return
 }
@@ -313,5 +332,8 @@ func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.Users) {
 	require.Equal(t, user.FirstName, gotUser.FirstName)
 	require.Equal(t, user.LastName, gotUser.LastName)
 	require.Equal(t, user.Email, gotUser.Email)
+	require.Equal(t, user.Phone, gotUser.Phone)
+	require.Equal(t, user.TimeZone, gotUser.TimeZone)
+	require.Equal(t, user.ImagePath, gotUser.ImagePath)
 	require.Empty(t, gotUser.PasswordHash)
 }

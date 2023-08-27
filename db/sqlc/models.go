@@ -5,45 +5,77 @@
 package db
 
 import (
+	"database/sql"
 	"time"
-
-	"github.com/google/uuid"
 )
 
+type Currencies struct {
+	ID           int64     `json:"id"`
+	Code         string    `json:"code"`
+	Name         string    `json:"name"`
+	Symbol       string    `json:"symbol"`
+	ExchangeRate float64   `json:"exchange_rate"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type ExpenseShares struct {
+	ID         int64     `json:"id"`
+	ExpenseID  int64     `json:"expense_id"`
+	UserID     int64     `json:"user_id"`
+	Share      string    `json:"share"`
+	PaidStatus bool      `json:"paid_status"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
 type Expenses struct {
-	ID              int64     `json:"id"`
-	TripID          int64     `json:"trip_id"`
-	PayerTravelerID int64     `json:"payer_traveler_id"`
-	Amount          string    `json:"amount"`
-	Description     string    `json:"description"`
-	CreatedAt       time.Time `json:"created_at"`
+	ID          int64     `json:"id"`
+	GroupID     int64     `json:"group_id"`
+	PaidByID    int64     `json:"paid_by_id"`
+	Amount      string    `json:"amount"`
+	Description string    `json:"description"`
+	Date        time.Time `json:"date"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
-type FellowTravelers struct {
-	ID              int64     `json:"id"`
-	TripID          int64     `json:"trip_id"`
-	FellowFirstName string    `json:"fellow_first_name"`
-	FellowLastName  string    `json:"fellow_last_name"`
-	CreatedAt       time.Time `json:"created_at"`
-}
-
-type Sessions struct {
-	ID           uuid.UUID `json:"id"`
-	UserID       int64     `json:"user_id"`
-	RefreshToken string    `json:"refresh_token"`
-	UserAgent    string    `json:"user_agent"`
-	ClientIp     string    `json:"client_ip"`
-	IsBlocked    bool      `json:"is_blocked"`
-	ExpiresAt    time.Time `json:"expires_at"`
-	CreatedAt    time.Time `json:"created_at"`
-}
-
-type Trips struct {
+type GroupCategories struct {
 	ID        int64     `json:"id"`
-	Title     string    `json:"title"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type GroupMembers struct {
+	ID        int64     `json:"id"`
+	GroupID   int64     `json:"group_id"`
 	UserID    int64     `json:"user_id"`
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type Groups struct {
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	CategoryID  int64     `json:"category_id"`
+	ImagePath   string    `json:"image_path"`
+	CreatedByID int64     `json:"created_by_id"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
+type Invitations struct {
+	ID         int64        `json:"id"`
+	InviterID  int64        `json:"inviter_id"`
+	InviteeID  int64        `json:"invitee_id"`
+	GroupID    int64        `json:"group_id"`
+	Status     string       `json:"status"`
+	Code       string       `json:"code"`
+	CreatedAt  time.Time    `json:"created_at"`
+	AcceptedAt sql.NullTime `json:"accepted_at"`
+	RejectedAt sql.NullTime `json:"rejected_at"`
+}
+
+type Notifications struct {
+	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id"`
+	Message   string    `json:"message"`
+	IsRead    bool      `json:"is_read"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -53,5 +85,8 @@ type Users struct {
 	LastName     string    `json:"last_name"`
 	Email        string    `json:"email"`
 	PasswordHash string    `json:"password_hash"`
+	Phone        string    `json:"phone"`
+	ImagePath    string    `json:"image_path"`
+	TimeZone     string    `json:"time_zone"`
 	CreatedAt    time.Time `json:"created_at"`
 }
