@@ -72,6 +72,8 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	// Get a user by ID
 	GetUserByID(ctx context.Context, id int64) (Users, error)
+	// Get User By Phone Or Email
+	GetUserByPhone(ctx context.Context, phone string) (Users, error)
 	// List currencies with pagination
 	ListCurrencies(ctx context.Context, arg ListCurrenciesParams) ([]Currencies, error)
 	// List expense shares for an expense with pagination
@@ -81,6 +83,8 @@ type Querier interface {
 	ListGroupCategories(ctx context.Context, arg ListGroupCategoriesParams) ([]GroupCategories, error)
 	// List group members for a group with pagination
 	ListGroupMembers(ctx context.Context, arg ListGroupMembersParams) ([]GroupMembers, error)
+	// List group members for a group with pagination, including user and group details
+	ListGroupMembersWithDetails(ctx context.Context, arg ListGroupMembersWithDetailsParams) ([]ListGroupMembersWithDetailsRow, error)
 	// List groups with pagination
 	ListGroups(ctx context.Context, arg ListGroupsParams) ([]Groups, error)
 	// List invitations for an invitee with pagination

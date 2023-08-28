@@ -118,3 +118,24 @@ func TestDeleteGroupMembersByGroupID(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, groupMembers, 0)
 }
+
+func TestGetGroupMembersWithDetail(t *testing.T) {
+	user := createRandomUser(t)
+	group := createRandomGroup(t, user)
+	for i := 0; i < 10; i++ {
+		createRandomGroupMember(t, group)
+	}
+	arg := ListGroupMembersWithDetailsParams{
+		Limit:   5,
+		Offset:  5,
+		GroupID: group.ID,
+	}
+
+	groupMembers, err := testQueries.ListGroupMembersWithDetails(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, groupMembers, 5)
+
+	for _, groupMember := range groupMembers {
+		require.NotEmpty(t, groupMember)
+	}
+}

@@ -45,3 +45,8 @@ WHERE id = $1 RETURNING *;
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1;
+
+-- Get User By Phone Or Email
+-- name: GetUserByPhone :one
+SELECT * FROM users
+WHERE phone = $1 LIMIT 1;

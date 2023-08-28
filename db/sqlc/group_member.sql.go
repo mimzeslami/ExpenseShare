@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createGroupMember = `-- name: CreateGroupMember :one
@@ -105,6 +106,90 @@ func (q *Queries) ListGroupMembers(ctx context.Context, arg ListGroupMembersPara
 			&i.GroupID,
 			&i.UserID,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupMembersWithDetails = `-- name: ListGroupMembersWithDetails :many
+SELECT 
+    gm.id, gm.group_id, gm.user_id, gm.created_at,
+    u.id AS user_id,
+    u.first_name AS user_first_name,
+    u.last_name AS user_last_name,
+    u.email AS user_email,
+    u.phone AS user_phone,
+    g.id AS group_id,
+    g.name AS group_name,
+    g.category_id AS group_category_id,
+    g.created_by_id AS group_created_by_id
+FROM 
+    group_members gm
+JOIN 
+    users u ON gm.user_id = u.id
+JOIN 
+    groups g ON gm.group_id = g.id
+WHERE 
+    gm.group_id = $1
+LIMIT 
+    $2 OFFSET $3
+`
+
+type ListGroupMembersWithDetailsParams struct {
+	GroupID int64 `json:"group_id"`
+	Limit   int32 `json:"limit"`
+	Offset  int32 `json:"offset"`
+}
+
+type ListGroupMembersWithDetailsRow struct {
+	ID               int64     `json:"id"`
+	GroupID          int64     `json:"group_id"`
+	UserID           int64     `json:"user_id"`
+	CreatedAt        time.Time `json:"created_at"`
+	UserID_2         int64     `json:"user_id_2"`
+	UserFirstName    string    `json:"user_first_name"`
+	UserLastName     string    `json:"user_last_name"`
+	UserEmail        string    `json:"user_email"`
+	UserPhone        string    `json:"user_phone"`
+	GroupID_2        int64     `json:"group_id_2"`
+	GroupName        string    `json:"group_name"`
+	GroupCategoryID  int64     `json:"group_category_id"`
+	GroupCreatedByID int64     `json:"group_created_by_id"`
+}
+
+// List group members for a group with pagination, including user and group details
+func (q *Queries) ListGroupMembersWithDetails(ctx context.Context, arg ListGroupMembersWithDetailsParams) ([]ListGroupMembersWithDetailsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupMembersWithDetails, arg.GroupID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListGroupMembersWithDetailsRow{}
+	for rows.Next() {
+		var i ListGroupMembersWithDetailsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.UserID,
+			&i.CreatedAt,
+			&i.UserID_2,
+			&i.UserFirstName,
+			&i.UserLastName,
+			&i.UserEmail,
+			&i.UserPhone,
+			&i.GroupID_2,
+			&i.GroupName,
+			&i.GroupCategoryID,
+			&i.GroupCreatedByID,
 		); err != nil {
 			return nil, err
 		}

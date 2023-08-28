@@ -122,7 +122,9 @@ ALTER TABLE invitations ADD FOREIGN KEY (group_id) REFERENCES groups (id);
 
 
 
-ALTER TABLE "users" ADD CONSTRAINT "email_key" UNIQUE ("email");
+ALTER TABLE "users" ADD CONSTRAINT "phone_key" UNIQUE ("phone");
+ALTER TABLE "group_members" ADD CONSTRAINT "group_members_key" UNIQUE ("group_id", "user_id");
+ALTER TABLE "invitations" ADD CONSTRAINT "invitations_key" UNIQUE ("inviter_id", "invitee_id", "group_id");
 
 
 -- ... Other foreign key constraints ...
