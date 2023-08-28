@@ -369,6 +369,21 @@ func (mr *MockStoreMockRecorder) GetCurrencyByID(arg0, arg1 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrencyByID", reflect.TypeOf((*MockStore)(nil).GetCurrencyByID), arg0, arg1)
 }
 
+// GetCurrentInvitationByGroupIDAndInviteeID mocks base method.
+func (m *MockStore) GetCurrentInvitationByGroupIDAndInviteeID(arg0 context.Context, arg1 db.GetCurrentInvitationByGroupIDAndInviteeIDParams) (db.Invitations, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCurrentInvitationByGroupIDAndInviteeID", arg0, arg1)
+	ret0, _ := ret[0].(db.Invitations)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCurrentInvitationByGroupIDAndInviteeID indicates an expected call of GetCurrentInvitationByGroupIDAndInviteeID.
+func (mr *MockStoreMockRecorder) GetCurrentInvitationByGroupIDAndInviteeID(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentInvitationByGroupIDAndInviteeID", reflect.TypeOf((*MockStore)(nil).GetCurrentInvitationByGroupIDAndInviteeID), arg0, arg1)
+}
+
 // GetExpenseByID mocks base method.
 func (m *MockStore) GetExpenseByID(arg0 context.Context, arg1 int64) (db.Expenses, error) {
 	m.ctrl.T.Helper()
@@ -444,6 +459,21 @@ func (mr *MockStoreMockRecorder) GetGroupMemberByID(arg0, arg1 interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupMemberByID", reflect.TypeOf((*MockStore)(nil).GetGroupMemberByID), arg0, arg1)
 }
 
+// GetInvitationByCode mocks base method.
+func (m *MockStore) GetInvitationByCode(arg0 context.Context, arg1 string) (db.Invitations, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetInvitationByCode", arg0, arg1)
+	ret0, _ := ret[0].(db.Invitations)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetInvitationByCode indicates an expected call of GetInvitationByCode.
+func (mr *MockStoreMockRecorder) GetInvitationByCode(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInvitationByCode", reflect.TypeOf((*MockStore)(nil).GetInvitationByCode), arg0, arg1)
+}
+
 // GetInvitationByID mocks base method.
 func (m *MockStore) GetInvitationByID(arg0 context.Context, arg1 int64) (db.Invitations, error) {
 	m.ctrl.T.Helper()
@@ -517,6 +547,21 @@ func (m *MockStore) GetUserByPhone(arg0 context.Context, arg1 string) (db.Users,
 func (mr *MockStoreMockRecorder) GetUserByPhone(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPhone", reflect.TypeOf((*MockStore)(nil).GetUserByPhone), arg0, arg1)
+}
+
+// GetUserInfoByInvitationCode mocks base method.
+func (m *MockStore) GetUserInfoByInvitationCode(arg0 context.Context, arg1 string) (db.GetUserInfoByInvitationCodeRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserInfoByInvitationCode", arg0, arg1)
+	ret0, _ := ret[0].(db.GetUserInfoByInvitationCodeRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserInfoByInvitationCode indicates an expected call of GetUserInfoByInvitationCode.
+func (mr *MockStoreMockRecorder) GetUserInfoByInvitationCode(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserInfoByInvitationCode", reflect.TypeOf((*MockStore)(nil).GetUserInfoByInvitationCode), arg0, arg1)
 }
 
 // ListCurrencies mocks base method.

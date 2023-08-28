@@ -55,6 +55,8 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	// Get a currency by ID
 	GetCurrencyByID(ctx context.Context, id int64) (Currencies, error)
+	// Get Current Invitation By GroupID And InviteeID
+	GetCurrentInvitationByGroupIDAndInviteeID(ctx context.Context, arg GetCurrentInvitationByGroupIDAndInviteeIDParams) (Invitations, error)
 	// Get an expense by ID
 	GetExpenseByID(ctx context.Context, id int64) (Expenses, error)
 	// Get an expense share by ID
@@ -64,6 +66,8 @@ type Querier interface {
 	GetGroupCategory(ctx context.Context, id int64) (GroupCategories, error)
 	// Get a group member by ID
 	GetGroupMemberByID(ctx context.Context, id int64) (GroupMembers, error)
+	// Get invitation by code
+	GetInvitationByCode(ctx context.Context, code string) (Invitations, error)
 	// Get an invitation by ID
 	GetInvitationByID(ctx context.Context, id int64) (Invitations, error)
 	// Get a notification by ID
@@ -74,6 +78,8 @@ type Querier interface {
 	GetUserByID(ctx context.Context, id int64) (Users, error)
 	// Get User By Phone Or Email
 	GetUserByPhone(ctx context.Context, phone string) (Users, error)
+	// Get User info by invitation code
+	GetUserInfoByInvitationCode(ctx context.Context, code string) (GetUserInfoByInvitationCodeRow, error)
 	// List currencies with pagination
 	ListCurrencies(ctx context.Context, arg ListCurrenciesParams) ([]Currencies, error)
 	// List expense shares for an expense with pagination

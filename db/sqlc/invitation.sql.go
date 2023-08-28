@@ -67,6 +67,58 @@ func (q *Queries) DeleteInvitation(ctx context.Context, id int64) error {
 	return err
 }
 
+const getCurrentInvitationByGroupIDAndInviteeID = `-- name: GetCurrentInvitationByGroupIDAndInviteeID :one
+SELECT id, inviter_id, invitee_id, group_id, status, code, created_at, accepted_at, rejected_at FROM invitations
+WHERE group_id = $1 AND invitee_id = $2 AND inviter_id = $3
+`
+
+type GetCurrentInvitationByGroupIDAndInviteeIDParams struct {
+	GroupID   int64 `json:"group_id"`
+	InviteeID int64 `json:"invitee_id"`
+	InviterID int64 `json:"inviter_id"`
+}
+
+// Get Current Invitation By GroupID And InviteeID
+func (q *Queries) GetCurrentInvitationByGroupIDAndInviteeID(ctx context.Context, arg GetCurrentInvitationByGroupIDAndInviteeIDParams) (Invitations, error) {
+	row := q.db.QueryRowContext(ctx, getCurrentInvitationByGroupIDAndInviteeID, arg.GroupID, arg.InviteeID, arg.InviterID)
+	var i Invitations
+	err := row.Scan(
+		&i.ID,
+		&i.InviterID,
+		&i.InviteeID,
+		&i.GroupID,
+		&i.Status,
+		&i.Code,
+		&i.CreatedAt,
+		&i.AcceptedAt,
+		&i.RejectedAt,
+	)
+	return i, err
+}
+
+const getInvitationByCode = `-- name: GetInvitationByCode :one
+SELECT id, inviter_id, invitee_id, group_id, status, code, created_at, accepted_at, rejected_at FROM invitations
+WHERE code = $1
+`
+
+// Get invitation by code
+func (q *Queries) GetInvitationByCode(ctx context.Context, code string) (Invitations, error) {
+	row := q.db.QueryRowContext(ctx, getInvitationByCode, code)
+	var i Invitations
+	err := row.Scan(
+		&i.ID,
+		&i.InviterID,
+		&i.InviteeID,
+		&i.GroupID,
+		&i.Status,
+		&i.Code,
+		&i.CreatedAt,
+		&i.AcceptedAt,
+		&i.RejectedAt,
+	)
+	return i, err
+}
+
 const getInvitationByID = `-- name: GetInvitationByID :one
 SELECT id, inviter_id, invitee_id, group_id, status, code, created_at, accepted_at, rejected_at FROM invitations
 WHERE id = $1 LIMIT 1
@@ -86,6 +138,36 @@ func (q *Queries) GetInvitationByID(ctx context.Context, id int64) (Invitations,
 		&i.CreatedAt,
 		&i.AcceptedAt,
 		&i.RejectedAt,
+	)
+	return i, err
+}
+
+const getUserInfoByInvitationCode = `-- name: GetUserInfoByInvitationCode :one
+SELECT users.id, users.email, users.first_name, users.last_name, users.phone, users.time_zone FROM users
+INNER JOIN invitations ON users.id = invitations.invitee_id
+WHERE invitations.code = $1
+`
+
+type GetUserInfoByInvitationCodeRow struct {
+	ID        int64  `json:"id"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Phone     string `json:"phone"`
+	TimeZone  string `json:"time_zone"`
+}
+
+// Get User info by invitation code
+func (q *Queries) GetUserInfoByInvitationCode(ctx context.Context, code string) (GetUserInfoByInvitationCodeRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserInfoByInvitationCode, code)
+	var i GetUserInfoByInvitationCodeRow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.TimeZone,
 	)
 	return i, err
 }

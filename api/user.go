@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 	db "github.com/mimzeslami/expense_share/db/sqlc"
-	"github.com/mimzeslami/expense_share/token"
 	"github.com/mimzeslami/expense_share/util"
 )
 
@@ -140,17 +139,18 @@ func (server *Server) login(ctx *gin.Context) {
 }
 
 type updateUserRequest struct {
-	ID        int64  `json:"id" binding:"required,min=1"`
-	FirstName string `json:"first_name" binding:"required,alphanum"`
-	LastName  string `json:"last_name" binding:"required,alphanum"`
-	Password  string `json:"password" binding:"required,min=6"`
-	Email     string `json:"email" binding:"email"`
-	Phone     string `json:"phone" binding:"required"`
-	ImagePath string `json:"image_path"`
-	TimeZone  string `json:"time_zone"`
+	ID             int64  `json:"id" binding:"required,min=1"`
+	FirstName      string `json:"first_name" binding:"required,alphanum"`
+	LastName       string `json:"last_name" binding:"required,alphanum"`
+	Password       string `json:"password" binding:"required,min=6"`
+	Email          string `json:"email" binding:"email"`
+	Phone          string `json:"phone" binding:"required"`
+	ImagePath      string `json:"image_path"`
+	TimeZone       string `json:"time_zone"`
+	InvitationCode string `json:"code"`
 }
 
-func (server *Server) updateUser(ctx *gin.Context) {
+func (server *Server) completeProfile(ctx *gin.Context) {
 	var req updateUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -158,13 +158,36 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	invitation, err := server.store.GetInvitationByCode(ctx, req.InvitationCode)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if invitation.Status != db.InvitationStatusPending {
+		ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("invitation is not pending")))
+		return
+	}
+	arg := db.UpdateInvitationParams{
+		ID:     invitation.ID,
+		Status: db.InvitationStatusAccepted,
+		AcceptedAt: sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		},
+	}
+	invitation, err = server.store.UpdateInvitation(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	arg := db.UpdateUserParams{
+	userInfo := db.UpdateUserParams{
 		ID:           req.ID,
 		FirstName:    req.FirstName,
 		LastName:     req.LastName,
@@ -175,20 +198,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		PasswordHash: hashedPassword,
 	}
 
-	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-
-	previousUser, err := server.store.GetUserByID(ctx, req.ID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	if previousUser.ID != authPayload.UserId {
-		ctx.JSON(http.StatusForbidden, errorResponse(err))
-		return
-	}
-
-	user, err := server.store.UpdateUser(ctx, arg)
+	user, err := server.store.UpdateUser(ctx, userInfo)
 	if err != nil {
 		if pgErr, ok := err.(*pq.Error); ok {
 			if pgErr.Code == db.UniqueViolation {
@@ -200,6 +210,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
 	rsp := newUserResponse(user)
 	ctx.JSON(http.StatusOK, rsp)
 }

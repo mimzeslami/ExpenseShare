@@ -38,6 +38,9 @@ func (server *Server) setupRouter() {
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.login)
 
+	router.GET("/invitations/:code", server.getUserInfoByInvitationCode)
+	router.PUT("/users/complete_profile", server.completeProfile)
+
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authRoutes.POST("/group_categories", server.createGroupCategory)
 	authRoutes.GET("/group_categories", server.listGroupCategories)
@@ -54,8 +57,6 @@ func (server *Server) setupRouter() {
 	authRoutes.POST("/group_members", server.createGroupMember)
 	authRoutes.GET("/group_members", server.listGroupMembers)
 	authRoutes.DELETE("/group_members/:group_id/:id", server.deleteGroupMember)
-
-	authRoutes.PUT("/users", server.updateUser)
 
 	server.router = router
 }
