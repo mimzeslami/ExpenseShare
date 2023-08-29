@@ -61,9 +61,13 @@ type Querier interface {
 	GetExpenseByID(ctx context.Context, id int64) (Expenses, error)
 	// Get an expense share by ID
 	GetExpenseShareByID(ctx context.Context, id int64) (ExpenseShares, error)
+	// Get Group By GroupID And UserID
+	GetGroupByGroupIDAndUserID(ctx context.Context, arg GetGroupByGroupIDAndUserIDParams) (Groups, error)
 	// Get a group by ID
 	GetGroupByID(ctx context.Context, arg GetGroupByIDParams) (Groups, error)
 	GetGroupCategory(ctx context.Context, id int64) (GroupCategories, error)
+	// Get Group Member by Group ID and User ID
+	GetGroupMemberByGroupIDAndUserID(ctx context.Context, arg GetGroupMemberByGroupIDAndUserIDParams) (GroupMembers, error)
 	// Get a group member by ID
 	GetGroupMemberByID(ctx context.Context, id int64) (GroupMembers, error)
 	// Get invitation by code

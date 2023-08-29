@@ -515,6 +515,16 @@ func TestUpdateGroupAPI(t *testing.T) {
 					CreatedByID: user.ID,
 				}
 
+				arg1 := db.GetGroupByGroupIDAndUserIDParams{
+					ID:          group.ID,
+					CreatedByID: user.ID,
+				}
+
+				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Eq(arg1)).
+					Times(1).
+					Return(group, nil)
+
 				store.EXPECT().
 					UpdateGroup(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
@@ -542,6 +552,15 @@ func TestUpdateGroupAPI(t *testing.T) {
 					CreatedByID: user.ID,
 				}
 
+				arg1 := db.GetGroupByGroupIDAndUserIDParams{
+					ID:          group.ID,
+					CreatedByID: user.ID,
+				}
+
+				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Eq(arg1)).
+					Times(0)
+
 				store.EXPECT().
 					UpdateGroup(gomock.Any(), gomock.Eq(arg)).
 					Times(0)
@@ -567,6 +586,15 @@ func TestUpdateGroupAPI(t *testing.T) {
 					CreatedByID: user.ID,
 				}
 
+				arg1 := db.GetGroupByGroupIDAndUserIDParams{
+					ID:          group.ID,
+					CreatedByID: user.ID,
+				}
+
+				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Eq(arg1)).
+					Times(0)
+
 				store.EXPECT().
 					UpdateGroup(gomock.Any(), gomock.Eq(arg)).
 					Times(0)
@@ -591,6 +619,16 @@ func TestUpdateGroupAPI(t *testing.T) {
 					ImagePath:   group.ImagePath,
 					CreatedByID: user.ID,
 				}
+
+				arg1 := db.GetGroupByGroupIDAndUserIDParams{
+					ID:          group.ID,
+					CreatedByID: user.ID,
+				}
+
+				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Eq(arg1)).
+					Times(1).
+					Return(group, nil)
 
 				store.EXPECT().
 					UpdateGroup(gomock.Any(), gomock.Eq(arg)).
@@ -667,6 +705,16 @@ func TestDeleteGroupAPI(t *testing.T) {
 					CreatedByID: user.ID,
 				}
 
+				arg1 := db.GetGroupByGroupIDAndUserIDParams{
+					ID:          group.ID,
+					CreatedByID: user.ID,
+				}
+
+				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Eq(arg1)).
+					Times(1).
+					Return(group, nil)
+
 				store.EXPECT().
 					DeleteGroupTx(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
@@ -685,6 +733,9 @@ func TestDeleteGroupAPI(t *testing.T) {
 			name:    "Unauthrized",
 			groupID: group.ID,
 			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Any()).
+					Times(0)
 
 				store.EXPECT().
 					DeleteGroupTx(gomock.Any(), gomock.Any()).
@@ -705,6 +756,10 @@ func TestDeleteGroupAPI(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 
 				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Any()).
+					Times(0)
+
+				store.EXPECT().
 					DeleteGroupTx(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
@@ -721,6 +776,16 @@ func TestDeleteGroupAPI(t *testing.T) {
 			name:    "InternalError",
 			groupID: group.ID,
 			buildStubs: func(store *mockdb.MockStore) {
+
+				arg1 := db.GetGroupByGroupIDAndUserIDParams{
+					ID:          group.ID,
+					CreatedByID: user.ID,
+				}
+
+				store.EXPECT().
+					GetGroupByGroupIDAndUserID(gomock.Any(), gomock.Eq(arg1)).
+					Times(1).
+					Return(group, nil)
 
 				store.EXPECT().
 					DeleteGroupTx(gomock.Any(), gomock.Any()).

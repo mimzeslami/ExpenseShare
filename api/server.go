@@ -58,6 +58,8 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/group_members", server.listGroupMembers)
 	authRoutes.DELETE("/group_members/:group_id/:id", server.deleteGroupMember)
 
+	authRoutes.POST("/expenses", server.createExpense)
+
 	server.router = router
 }
 

@@ -414,6 +414,21 @@ func (mr *MockStoreMockRecorder) GetExpenseShareByID(arg0, arg1 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpenseShareByID", reflect.TypeOf((*MockStore)(nil).GetExpenseShareByID), arg0, arg1)
 }
 
+// GetGroupByGroupIDAndUserID mocks base method.
+func (m *MockStore) GetGroupByGroupIDAndUserID(arg0 context.Context, arg1 db.GetGroupByGroupIDAndUserIDParams) (db.Groups, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroupByGroupIDAndUserID", arg0, arg1)
+	ret0, _ := ret[0].(db.Groups)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroupByGroupIDAndUserID indicates an expected call of GetGroupByGroupIDAndUserID.
+func (mr *MockStoreMockRecorder) GetGroupByGroupIDAndUserID(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupByGroupIDAndUserID", reflect.TypeOf((*MockStore)(nil).GetGroupByGroupIDAndUserID), arg0, arg1)
+}
+
 // GetGroupByID mocks base method.
 func (m *MockStore) GetGroupByID(arg0 context.Context, arg1 db.GetGroupByIDParams) (db.Groups, error) {
 	m.ctrl.T.Helper()
@@ -442,6 +457,21 @@ func (m *MockStore) GetGroupCategory(arg0 context.Context, arg1 int64) (db.Group
 func (mr *MockStoreMockRecorder) GetGroupCategory(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupCategory", reflect.TypeOf((*MockStore)(nil).GetGroupCategory), arg0, arg1)
+}
+
+// GetGroupMemberByGroupIDAndUserID mocks base method.
+func (m *MockStore) GetGroupMemberByGroupIDAndUserID(arg0 context.Context, arg1 db.GetGroupMemberByGroupIDAndUserIDParams) (db.GroupMembers, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroupMemberByGroupIDAndUserID", arg0, arg1)
+	ret0, _ := ret[0].(db.GroupMembers)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroupMemberByGroupIDAndUserID indicates an expected call of GetGroupMemberByGroupIDAndUserID.
+func (mr *MockStoreMockRecorder) GetGroupMemberByGroupIDAndUserID(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupMemberByGroupIDAndUserID", reflect.TypeOf((*MockStore)(nil).GetGroupMemberByGroupIDAndUserID), arg0, arg1)
 }
 
 // GetGroupMemberByID mocks base method.

@@ -33,7 +33,6 @@ type Expenses struct {
 	PaidByID    int64     `json:"paid_by_id"`
 	Amount      string    `json:"amount"`
 	Description string    `json:"description"`
-	Date        time.Time `json:"date"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 

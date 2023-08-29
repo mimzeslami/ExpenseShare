@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"time"
 )
 
 const createExpense = `-- name: CreateExpense :one
@@ -16,19 +15,17 @@ INSERT INTO expenses (
   group_id,
   paid_by_id,
   amount,
-  description,
-  date
+  description
 ) VALUES (
-  $1, $2, $3, $4, $5
-) RETURNING id, group_id, paid_by_id, amount, description, date, created_at
+  $1, $2, $3, $4
+) RETURNING id, group_id, paid_by_id, amount, description, created_at
 `
 
 type CreateExpenseParams struct {
-	GroupID     int64     `json:"group_id"`
-	PaidByID    int64     `json:"paid_by_id"`
-	Amount      string    `json:"amount"`
-	Description string    `json:"description"`
-	Date        time.Time `json:"date"`
+	GroupID     int64  `json:"group_id"`
+	PaidByID    int64  `json:"paid_by_id"`
+	Amount      string `json:"amount"`
+	Description string `json:"description"`
 }
 
 // expenses.sql
@@ -39,7 +36,6 @@ func (q *Queries) CreateExpense(ctx context.Context, arg CreateExpenseParams) (E
 		arg.PaidByID,
 		arg.Amount,
 		arg.Description,
-		arg.Date,
 	)
 	var i Expenses
 	err := row.Scan(
@@ -48,7 +44,6 @@ func (q *Queries) CreateExpense(ctx context.Context, arg CreateExpenseParams) (E
 		&i.PaidByID,
 		&i.Amount,
 		&i.Description,
-		&i.Date,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -66,7 +61,7 @@ func (q *Queries) DeleteExpense(ctx context.Context, id int64) error {
 }
 
 const getExpenseByID = `-- name: GetExpenseByID :one
-SELECT id, group_id, paid_by_id, amount, description, date, created_at FROM expenses
+SELECT id, group_id, paid_by_id, amount, description, created_at FROM expenses
 WHERE id = $1 LIMIT 1
 `
 
@@ -80,14 +75,13 @@ func (q *Queries) GetExpenseByID(ctx context.Context, id int64) (Expenses, error
 		&i.PaidByID,
 		&i.Amount,
 		&i.Description,
-		&i.Date,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listExpenses = `-- name: ListExpenses :many
-SELECT id, group_id, paid_by_id, amount, description, date, created_at FROM expenses
+SELECT id, group_id, paid_by_id, amount, description, created_at FROM expenses
 WHERE group_id = $1
 LIMIT $2 OFFSET $3
 `
@@ -114,7 +108,6 @@ func (q *Queries) ListExpenses(ctx context.Context, arg ListExpensesParams) ([]E
 			&i.PaidByID,
 			&i.Amount,
 			&i.Description,
-			&i.Date,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -133,26 +126,19 @@ func (q *Queries) ListExpenses(ctx context.Context, arg ListExpensesParams) ([]E
 const updateExpense = `-- name: UpdateExpense :one
 UPDATE expenses SET
   amount = $2,
-  description = $3,
-  date = $4
-WHERE id = $1 RETURNING id, group_id, paid_by_id, amount, description, date, created_at
+  description = $3
+WHERE id = $1 RETURNING id, group_id, paid_by_id, amount, description, created_at
 `
 
 type UpdateExpenseParams struct {
-	ID          int64     `json:"id"`
-	Amount      string    `json:"amount"`
-	Description string    `json:"description"`
-	Date        time.Time `json:"date"`
+	ID          int64  `json:"id"`
+	Amount      string `json:"amount"`
+	Description string `json:"description"`
 }
 
 // Update an expense by ID
 func (q *Queries) UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expenses, error) {
-	row := q.db.QueryRowContext(ctx, updateExpense,
-		arg.ID,
-		arg.Amount,
-		arg.Description,
-		arg.Date,
-	)
+	row := q.db.QueryRowContext(ctx, updateExpense, arg.ID, arg.Amount, arg.Description)
 	var i Expenses
 	err := row.Scan(
 		&i.ID,
@@ -160,7 +146,6 @@ func (q *Queries) UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (E
 		&i.PaidByID,
 		&i.Amount,
 		&i.Description,
-		&i.Date,
 		&i.CreatedAt,
 	)
 	return i, err

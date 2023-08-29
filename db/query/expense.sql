@@ -6,10 +6,9 @@ INSERT INTO expenses (
   group_id,
   paid_by_id,
   amount,
-  description,
-  date
+  description
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4
 ) RETURNING *;
 
 -- Get an expense by ID
@@ -27,8 +26,7 @@ LIMIT $2 OFFSET $3;
 -- name: UpdateExpense :one
 UPDATE expenses SET
   amount = $2,
-  description = $3,
-  date = $4
+  description = $3
 WHERE id = $1 RETURNING *;
 
 -- Delete an expense by ID

@@ -61,6 +61,29 @@ func (q *Queries) DeleteGroupMembers(ctx context.Context, groupID int64) error {
 	return err
 }
 
+const getGroupMemberByGroupIDAndUserID = `-- name: GetGroupMemberByGroupIDAndUserID :one
+SELECT id, group_id, user_id, created_at FROM group_members
+WHERE group_id = $1 AND user_id = $2 LIMIT 1
+`
+
+type GetGroupMemberByGroupIDAndUserIDParams struct {
+	GroupID int64 `json:"group_id"`
+	UserID  int64 `json:"user_id"`
+}
+
+// Get Group Member by Group ID and User ID
+func (q *Queries) GetGroupMemberByGroupIDAndUserID(ctx context.Context, arg GetGroupMemberByGroupIDAndUserIDParams) (GroupMembers, error) {
+	row := q.db.QueryRowContext(ctx, getGroupMemberByGroupIDAndUserID, arg.GroupID, arg.UserID)
+	var i GroupMembers
+	err := row.Scan(
+		&i.ID,
+		&i.GroupID,
+		&i.UserID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getGroupMemberByID = `-- name: GetGroupMemberByID :one
 SELECT id, group_id, user_id, created_at FROM group_members
 WHERE id = $1 LIMIT 1

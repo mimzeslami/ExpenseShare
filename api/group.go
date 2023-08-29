@@ -127,6 +127,14 @@ func (server *Server) updateGroup(ctx *gin.Context) {
 	}
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if ok, err := server.isUserGroupOwner(ctx, authPayload.UserId, req.ID); !ok {
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusForbidden, errorResponse(err))
+		return
+	}
 
 	arg := db.UpdateGroupParams{
 		ID:          req.ID,
@@ -156,6 +164,14 @@ func (server *Server) deleteGroup(ctx *gin.Context) {
 	}
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if ok, err := server.isUserGroupOwner(ctx, authPayload.UserId, req.ID); !ok {
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusForbidden, errorResponse(err))
+		return
+	}
 
 	arg := db.DeleteGroupParams{
 		ID:          req.ID,

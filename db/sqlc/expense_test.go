@@ -16,7 +16,6 @@ func createRandomExpense(t *testing.T, group Groups) Expenses {
 		GroupID:     group.ID,
 		PaidByID:    user.ID,
 		Description: util.RandomString(6),
-		Date:        util.RandomDatetime(),
 		Amount:      util.RandomMoney(),
 	}
 
@@ -26,7 +25,6 @@ func createRandomExpense(t *testing.T, group Groups) Expenses {
 	require.Equal(t, arg.GroupID, expense.GroupID)
 	require.Equal(t, arg.PaidByID, expense.PaidByID)
 	require.Equal(t, arg.Description, expense.Description)
-	require.Equal(t, arg.Date, expense.Date)
 	require.Equal(t, arg.Amount, expense.Amount)
 	require.NotZero(t, expense.ID)
 	require.NotZero(t, expense.CreatedAt)
@@ -53,7 +51,6 @@ func TestGetExpenseByID(t *testing.T) {
 	require.Equal(t, expense1.GroupID, expense2.GroupID)
 	require.Equal(t, expense1.PaidByID, expense2.PaidByID)
 	require.Equal(t, expense1.Description, expense2.Description)
-	require.Equal(t, expense1.Date, expense2.Date)
 	require.Equal(t, expense1.Amount, expense2.Amount)
 	require.WithinDuration(t, expense1.CreatedAt, expense2.CreatedAt, time.Second)
 }
@@ -100,7 +97,6 @@ func TestUpdateExpense(t *testing.T) {
 	arg := UpdateExpenseParams{
 		ID:          expense1.ID,
 		Description: util.RandomString(6),
-		Date:        util.RandomDatetime(),
 		Amount:      util.RandomMoney(),
 	}
 
@@ -111,7 +107,6 @@ func TestUpdateExpense(t *testing.T) {
 	require.Equal(t, expense1.GroupID, expense2.GroupID)
 	require.Equal(t, expense1.PaidByID, expense2.PaidByID)
 	require.Equal(t, arg.Description, expense2.Description)
-	require.Equal(t, arg.Date, expense2.Date)
 	require.Equal(t, arg.Amount, expense2.Amount)
 	require.WithinDuration(t, expense1.CreatedAt, expense2.CreatedAt, time.Second)
 }

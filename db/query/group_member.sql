@@ -61,3 +61,9 @@ WHERE
 LIMIT 
     $2 OFFSET $3;
 
+
+-- Get Group Member by Group ID and User ID
+-- name: GetGroupMemberByGroupIDAndUserID :one
+SELECT * FROM group_members
+WHERE group_id = $1 AND user_id = $2 LIMIT 1;
+

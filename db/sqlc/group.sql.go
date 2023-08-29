@@ -65,6 +65,31 @@ func (q *Queries) DeleteGroup(ctx context.Context, arg DeleteGroupParams) error 
 	return err
 }
 
+const getGroupByGroupIDAndUserID = `-- name: GetGroupByGroupIDAndUserID :one
+SELECT id, name, category_id, image_path, created_by_id, created_at FROM groups
+WHERE id = $1 AND created_by_id =$2 LIMIT 1
+`
+
+type GetGroupByGroupIDAndUserIDParams struct {
+	ID          int64 `json:"id"`
+	CreatedByID int64 `json:"created_by_id"`
+}
+
+// Get Group By GroupID And UserID
+func (q *Queries) GetGroupByGroupIDAndUserID(ctx context.Context, arg GetGroupByGroupIDAndUserIDParams) (Groups, error) {
+	row := q.db.QueryRowContext(ctx, getGroupByGroupIDAndUserID, arg.ID, arg.CreatedByID)
+	var i Groups
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CategoryID,
+		&i.ImagePath,
+		&i.CreatedByID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getGroupByID = `-- name: GetGroupByID :one
 SELECT id, name, category_id, image_path, created_by_id, created_at FROM groups
 WHERE id = $1 AND created_by_id =$2 LIMIT 1

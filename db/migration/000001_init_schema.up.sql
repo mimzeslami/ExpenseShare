@@ -46,7 +46,6 @@ CREATE TABLE expenses (
   paid_by_id bigint NOT NULL,
   amount VARCHAR NOT NULL,
   description VARCHAR NOT NULL,
-  date timestamptz NOT NULL,
   created_at timestamptz NOT NULL DEFAULT (now())
 );
 
