@@ -95,7 +95,7 @@ func (server *Server) listExpenses(ctx *gin.Context) {
 
 	arg := db.ListExpensesParams{
 		Limit:   req.Limit,
-		Offset:  req.Offset,
+		Offset:  (req.Offset - 1) * req.Limit,
 		GroupID: req.GroupID,
 	}
 
@@ -149,4 +149,25 @@ func (server *Server) deleteExpense(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Expense deleted successfully"})
+}
+
+type getExpenseRequest struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+
+func (server *Server) getExpense(ctx *gin.Context) {
+	var req getExpenseRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	expense, err := server.store.GetExpenseByID(ctx, req.ID)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, expense)
 }

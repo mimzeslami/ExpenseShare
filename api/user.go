@@ -2,7 +2,10 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -213,4 +216,82 @@ func (server *Server) completeProfile(ctx *gin.Context) {
 
 	rsp := newUserResponse(user)
 	ctx.JSON(http.StatusOK, rsp)
+}
+
+func (server *Server) googleLoginRequest(ctx *gin.Context) {
+	state := util.RandomString(12)
+	config, err := util.NewOAuthConfig()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.Redirect(http.StatusTemporaryRedirect, config.AuthCodeURL(state))
+}
+
+func (server *Server) googleLoginCallback(ctx *gin.Context) {
+	code := ctx.Query("code")
+	config, err := util.NewOAuthConfig()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Println("code: ", code)
+	log.Println("config: ", config.ClientSecret)
+
+	token, err := config.Exchange(ctx, code)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "could not exchange oauth code")
+		return
+	}
+
+	if !token.Valid() {
+		ctx.JSON(http.StatusInternalServerError, "invalid access token")
+		return
+	}
+
+	userInfo, err := getUserInfoFromGoogle(token.AccessToken)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, userInfo)
+
+}
+
+type GoogleUserInfo struct {
+	ID        string `json:"id"`
+	Email     string `json:"email"`
+	FirstName string `json:"given_name"`
+	LastName  string `json:"family_name"`
+	ImageURL  string `json:"picture"`
+}
+
+func getUserInfoFromGoogle(token string) (GoogleUserInfo, error) {
+	var userInfo GoogleUserInfo
+	client := http.Client{}
+	req, err := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
+	if err != nil {
+		return userInfo, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
+	res, err := client.Do(req)
+	if err != nil {
+		return userInfo, err
+	}
+	defer res.Body.Close()
+
+	// Read the response body into a []byte variable
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return userInfo, err
+	}
+
+	// Unmarshal the JSON from the []byte
+	if err := json.Unmarshal(body, &userInfo); err != nil {
+		return userInfo, err
+	}
+	return userInfo, nil
 }

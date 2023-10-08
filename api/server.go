@@ -38,6 +38,9 @@ func (server *Server) setupRouter() {
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.login)
 
+	router.GET("auth/google/url", server.googleLoginRequest)
+	router.GET("auth/google/redirect", server.googleLoginCallback)
+
 	router.GET("/invitations/:code", server.getUserInfoByInvitationCode)
 	router.PUT("/users/complete_profile", server.completeProfile)
 
@@ -59,6 +62,10 @@ func (server *Server) setupRouter() {
 	authRoutes.DELETE("/group_members/:group_id/:id", server.deleteGroupMember)
 
 	authRoutes.POST("/expenses", server.createExpense)
+	authRoutes.GET("/expenses", server.listExpenses)
+	authRoutes.GET("/expenses/:id", server.getExpense)
+	authRoutes.PUT("/expenses", server.updateExpense)
+	authRoutes.DELETE("/expenses/:id", server.deleteExpense)
 
 	server.router = router
 }
